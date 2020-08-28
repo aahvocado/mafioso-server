@@ -1,11 +1,12 @@
 import http from 'http';
 import fs from 'fs';
 
-const savePath = '../test_folder/';
+const savePath = process.env['SAVE_PATH'];
+const acceptedOrigins = process.env['LOCAL_APP_URL'];
 
 const server = http.createServer((req, res) => {
   // res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000/');
+  res.setHeader('Access-Control-Allow-Origin', acceptedOrigins);
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, Methods, Content-Type');
 

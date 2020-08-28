@@ -1,8 +1,8 @@
 {
   "presets": [
     ["@babel/preset-env", {
-      targets: {
-        esmodules: true
+      "targets": {
+        "esmodules": true
       }
     }]
   ],
@@ -10,7 +10,9 @@
     ["module-resolver", {
       "root": ["."],
       "alias": {
-        "controllers": "./src/controllers"
+        "constants": "./src/constants",
+        "controllers": "./src/controllers",
+        "utilities": "./src/utilities",
       }
     }]
   ]

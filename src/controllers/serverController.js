@@ -1,6 +1,8 @@
 import http from 'http';
 import fs from 'fs';
 
+import * as logParserUtils from 'utilities/logParserUtils';
+
 const savePath = process.env['SAVE_PATH'];
 const acceptedOrigins = process.env['LOCAL_APP_URL'];
 
@@ -21,8 +23,10 @@ const server = http.createServer((req, res) => {
 
     // buffering, save to system
     req.on('end', () => {
-      const fileName = 'test.txt';
-      fs.writeFile(`${savePath}${fileName}`, fileChunks.join(''), (err) => {
+      const fullText = fileChunks.join('');
+      const hashId = logParserUtils.parseHash(fullText);
+      const fileName = `${hashId}.txt`;
+      fs.writeFile(`${savePath}${fileName}`, fullText, (err) => {
         if (err) return console.log(err);
         console.log('...saved', fileName);
       })

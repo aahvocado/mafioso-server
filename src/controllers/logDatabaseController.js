@@ -25,7 +25,8 @@ class logDatabaseController {
    * @param {LogData} logData
    */
   addNewEntry(logData) {
-    const newEntry = `${logData.logHash}\t${logData.charName}`
+    const nowDate = new Date();
+    const newEntry = `${logData.logHash}\t${logData.charName}\t${nowDate.toDateString()}\n`
 
     fs.appendFile(logDatabasePath, newEntry, (err) => {
       if (err) return console.log(err);

@@ -4,12 +4,16 @@
   "description": "Server for KoL-Mafioso",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "compile": "babel src -d compiled",
+    "start": "npm run compile && node compiled/index.js"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "babel-plugin-module-resolver": "^4.0.0"
+  },
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0"
   }

@@ -1,0 +1,16 @@
+{
+  "name": "mafioso-server",
+  "version": "0.1.0",
+  "description": "Server for KoL-Mafioso",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0"
+  }
+}

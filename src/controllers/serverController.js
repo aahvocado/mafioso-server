@@ -1,9 +1,9 @@
 import http from 'http';
 import fs from 'fs';
 
-import logDatabaseController from 'controllers/logDatabaseController';
+import LogData from 'classes/LogData';
 
-import * as logParserUtils from 'utilities/logParserUtils';
+import logDatabaseController from 'controllers/logDatabaseController';
 
 const savePath = process.env['SAVE_PATH'];
 const acceptedOrigins = process.env['LOCAL_APP_URL'];
@@ -26,8 +26,9 @@ const server = http.createServer((req, res) => {
     // after buffering, save to system
     req.on('end', () => {
       const fullText = fileChunks.join('');
-      const hashId = logParserUtils.parseHash(fullText);
-      const fileName = `${hashId}.txt`;
+      const logData = new LogData(fullText);
+
+      const fileName = `${logData.logHash}.txt`;
       fs.writeFile(`${savePath}${fileName}`, fullText, (err) => {
         if (err) return console.log(err);
 
@@ -35,9 +36,7 @@ const server = http.createServer((req, res) => {
       });
 
       // create new entry
-      const charName = logParserUtils.parseName(fullText);
-      const dbEntry = `${hashId}\t${charName}`
-      logDatabaseController.addNewEntry(dbEntry);
+      logDatabaseController.addNewEntry(logData);
     })
   }
 });

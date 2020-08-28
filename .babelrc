@@ -10,6 +10,7 @@
     ["module-resolver", {
       "root": ["."],
       "alias": {
+        "classes": "./src/classes",
         "constants": "./src/constants",
         "controllers": "./src/controllers",
         "utilities": "./src/utilities",

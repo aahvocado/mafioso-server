@@ -1,4 +1,3 @@
-import REGEX from 'constants/REGEXES';
 
 /**
  * @param {Matcher} matcher
@@ -26,18 +25,4 @@ export function findMatcher(searchStr, matcher) {
 
   // not found - undefined
   return undefined;
-}
-/**
- * @param {String} rawText
- * @returns {String}
- */
-export function parseHash(rawText) {
-  return findMatcher(rawText, REGEX.PREAMBLE.HASH);
-}
-/**
- * @param {String} rawText
- * @returns {String}
- */
-export function parseName(rawText) {
-  return findMatcher(rawText, REGEX.PREAMBLE.NAME);
 }

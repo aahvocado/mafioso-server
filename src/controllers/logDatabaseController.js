@@ -22,10 +22,12 @@ class logDatabaseController {
     });
   }
   /**
-   *
+   * @param {LogData} logData
    */
-  addNewEntry(text) {
-    fs.appendFile(logDatabasePath, text, (err) => {
+  addNewEntry(logData) {
+    const newEntry = `${logData.logHash}\t${logData.charName}`
+
+    fs.appendFile(logDatabasePath, newEntry, (err) => {
       if (err) return console.log(err);
     })
   }

@@ -21,13 +21,14 @@ const server = http.createServer((req, res) => {
       fileChunks.push(buffer.toString());
     })
 
-    // buffering, save to system
+    // after buffering, save to system
     req.on('end', () => {
       const fullText = fileChunks.join('');
       const hashId = logParserUtils.parseHash(fullText);
       const fileName = `${hashId}.txt`;
       fs.writeFile(`${savePath}${fileName}`, fullText, (err) => {
         if (err) return console.log(err);
+
         console.log('...saved', fileName);
       })
     })

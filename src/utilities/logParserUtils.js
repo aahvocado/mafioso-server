@@ -29,7 +29,15 @@ export function findMatcher(searchStr, matcher) {
 }
 /**
  * @param {String} rawText
+ * @returns {String}
  */
 export function parseHash(rawText) {
   return findMatcher(rawText, REGEX.PREAMBLE.HASH);
+}
+/**
+ * @param {String} rawText
+ * @returns {String}
+ */
+export function parseName(rawText) {
+  return findMatcher(rawText, REGEX.PREAMBLE.NAME);
 }

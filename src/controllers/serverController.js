@@ -1,6 +1,8 @@
 import http from 'http';
 import fs from 'fs';
 
+import logDatabaseController from 'controllers/logDatabaseController';
+
 import * as logParserUtils from 'utilities/logParserUtils';
 
 const savePath = process.env['SAVE_PATH'];
@@ -30,7 +32,12 @@ const server = http.createServer((req, res) => {
         if (err) return console.log(err);
 
         console.log('...saved', fileName);
-      })
+      });
+
+      // create new entry
+      const charName = logParserUtils.parseName(fullText);
+      const dbEntry = `${hashId}\t${charName}`
+      logDatabaseController.addNewEntry(dbEntry);
     })
   }
 });

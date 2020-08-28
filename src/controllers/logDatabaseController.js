@@ -7,7 +7,7 @@ class logDatabaseController {
     this.instantiate();
   }
   /**
-   *
+   * creates the db txt file
    */
   instantiate() {
     if (fs.existsSync(logDatabasePath)) {
@@ -20,6 +20,14 @@ class logDatabaseController {
 
       console.log('Created "log-database.txt".');
     });
+  }
+  /**
+   *
+   */
+  addNewEntry(text) {
+    fs.appendFile(logDatabasePath, text, (err) => {
+      if (err) return console.log(err);
+    })
   }
 }
 

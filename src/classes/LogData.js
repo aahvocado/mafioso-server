@@ -25,6 +25,14 @@ export default class LogData {
     return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.DIFFICULTY);
   }
   /** @type {String} */
+  get dayCount() {
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.DAYS);
+  }
+  /** @type {String} */
+  get turnCount() {
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.TURNS);
+  }
+  /** @type {String} */
   get fileName() {
     return `${this.logHash}.txt`;
   }

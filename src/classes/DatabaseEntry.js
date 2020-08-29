@@ -20,7 +20,7 @@ export default class DatabaseEntry {
     this.entryId = entryId;
     /** @type {String} */
     this.visibility = 'false';
-    /** @type {Date} */
+    /** @type {String} */
     this.entryDate = createDate.toDateString();
     /** @type {String} */
     this.hash = logData.logHash;
@@ -30,10 +30,18 @@ export default class DatabaseEntry {
     this.pathName = logData.pathName;
     /** @type {String} */
     this.difficultyName = logData.difficultyName;
+    /** @type {String} */
+    this.dayCount = logData.dayCount;
+    /** @type {String} */
+    this.turnCount = logData.turnCount;
   }
   /** @type {String} */
   get isVisible() {
     return this.visibility === 'true';
+  }
+  /** @type {String} */
+  get date() {
+    return new Date(this.entryDate);
   }
   /**
    * @param {String} databaseRow
@@ -49,6 +57,8 @@ export default class DatabaseEntry {
     this.charName = entryPieces[4];
     this.pathName = entryPieces[5];
     this.difficultyName = entryPieces[6];
+    this.dayCount = entryPieces[7];
+    this.turnCount = entryPieces[8];
   }
   /**
    * @returns {String}

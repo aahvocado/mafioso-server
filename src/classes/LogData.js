@@ -3,7 +3,9 @@ import REGEX from 'constants/REGEXES';
 import * as regexUtils from 'utilities/regexUtils';
 
 export default class LogData {
+  /** @default */
   constructor(rawText) {
+    /** @type {String} */
     this.rawText = rawText;
   }
   /** @type {String} */
@@ -25,5 +27,11 @@ export default class LogData {
   /** @type {String} */
   get fileName() {
     return `${this.logHash}.txt`;
+  }
+  /**
+   * @returns {String}
+   */
+  export() {
+    return this.rawText;
   }
 }

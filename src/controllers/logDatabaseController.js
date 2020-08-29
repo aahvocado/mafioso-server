@@ -41,13 +41,29 @@ class logDatabaseController {
     this.addNewEntry(logData);
   }
   /**
-   * @param {String} fileName
+   * @param {Object} param
    * @returns {String}
    */
-  getFilePath(fileName) {
-    return `${savePath}${fileName}`;
+  getFilePath(param) {
+    if (param.fileName !== undefined) {
+      return `${savePath}${fileName}`;
+    }
+
+    if (param.hash !== undefined) {
+      return `${savePath}${hash}.txt`;
+    }
   }
-  // -- database entry functions
+  /**
+   * @param {Object} params
+   * @returns {File}
+   */
+  findLogFile(params) {
+    const filePath = this.getFilePath(params);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      console.log(`${filePath} ${err ? 'does not exist' : 'exists'}`);
+    });
+  }
+  // -- database functions
   /**
    * @param {LogData} logData
    */
@@ -58,26 +74,6 @@ class logDatabaseController {
     fs.appendFile(logDatabasePath, newEntry, (err) => {
       if (err) return console.log(err);
     })
-  }
-  /**
-   * @param {Object} params
-   * @returns {File}
-   */
-  findLogFile(params) {
-    const {hash} = params;
-    if (hash !== undefined) {
-      return this.findLogFileByHash(hash);
-    }
-  }
-  /**
-   * @param {String} hash
-   * @returns {File}
-   */
-  findLogFileByHash(hash) {
-    const filePath = `${savePath}${hash}.txt`;
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      console.log(`${filePath} ${err ? 'does not exist' : 'exists'}`);
-    });
   }
 }
 

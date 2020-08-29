@@ -1,0 +1,17 @@
+NAME=dextrial
+DIFFICULTY=Hardcore
+PATH=Community Service
+HASH=232219745
+<mafioso>
+Log Start: August 4, 2020 - Petember 3
+<mafioso/>
+
+Welcome to Valhalla!
+You have <3 banked Karma.
+You gain <3 Karma
+Your new Karma balance is <3
+Buy astral six-pack for <3 Karma (initial balance = <3)
+You spend <3 Karma
+Buy astral trousers for <3 Karma (initial balance = <3)
+You spend <3 Karma
+Ascend as a Hardcore Female Disco Bandit under the Vole sign on a Community Service path, banking <3 Karma.

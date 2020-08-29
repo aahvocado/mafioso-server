@@ -38,7 +38,6 @@ describe('logDatabaseController.js', () => {
       fs.writeFileSync(logDatabasePath, ''); // empty mock txt
 
       const foundEntry = logDatabaseController.findEntry('000000');
-
       assert.equal(foundEntry, undefined);
     });
 
@@ -46,8 +45,23 @@ describe('logDatabaseController.js', () => {
       fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
 
       const foundEntry = logDatabaseController.findEntry('000000');
-
       assert.equal(foundEntry.entryId, '0');
     })
   })
+
+  describe('hasEntry()', () => {
+    it('returns false if unable to find hash', () => {
+      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+
+      const doesItHave = logDatabaseController.hasEntry('123456');
+      assert.equal(doesItHave, false);
+    });
+
+    it('returns true if found DatabaseEntry', () => {
+      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+
+      const doesItHave = logDatabaseController.hasEntry('000000');
+      assert.equal(doesItHave, true);
+    });
+  });
 })

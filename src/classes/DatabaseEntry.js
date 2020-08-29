@@ -18,8 +18,8 @@ export default class DatabaseEntry {
 
     /** @type {String} */
     this.entryId = entryId;
-    /** @type {Boolean} */
-    this.visibility = false;
+    /** @type {String} */
+    this.visibility = 'false';
     /** @type {Date} */
     this.entryDate = createDate.toDateString();
     /** @type {String} */
@@ -30,6 +30,10 @@ export default class DatabaseEntry {
     this.pathName = logData.pathName;
     /** @type {String} */
     this.difficultyName = logData.difficultyName;
+  }
+  /** @type {String} */
+  get isVisible() {
+    return this.visibility === 'true';
   }
   /**
    * @param {String} databaseRow

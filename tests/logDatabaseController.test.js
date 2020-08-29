@@ -7,7 +7,6 @@ import LogData from 'classes/LogData';
 import logDatabaseController from 'controllers/logDatabaseController';
 
 const logDatabasePath = process.env['DB_PATH'];
-      // const testLog = 'NAME=dextrial\nDIFFICULTY=Hardcore\nPATH=Community Service\nHASH=000000\n<mafioso>\nLog Start: August 4, 2020 - Petember 3\n<mafioso/>';
 
 describe('logDatabaseController.js', () => {
   describe('addEntry()', () => {
@@ -72,18 +71,75 @@ describe('logDatabaseController.js', () => {
   describe('replaceEntry()', () => {
     it('properly replaces entry of given hash with the new entry', () => {
       fs.writeFileSync(logDatabasePath,
-        '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
         '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
         '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
       );
 
-      assert.equal(logDatabaseController.hasEntry('123456'), false); // should not have
+      assert.equal(logDatabaseController.hasEntry('123456'), false); // should not exist
 
       const newEntry = new DatabaseEntry('1\tfalse\tFri Aug 29 2020\t123456\tdextrial\tCommunity Service\tSoftcore\n');
       logDatabaseController.replaceEntry('111111', newEntry);
 
       assert.equal(logDatabaseController.hasEntry('123456'), true); // newly replaced
       assert.equal(logDatabaseController.hasEntry('111111'), false); // no longer in the db
+    });
+  });
+
+  describe('isEntryVisible()', () => {
+    it('returns a boolean value of the DatabaseEntrys visibility flag', () => {
+      fs.writeFileSync(logDatabasePath,
+        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
+
+      assert.equal(logDatabaseController.isEntryVisible('000000'), true);
+      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
+    });
+  });
+
+  describe('toggleEntryVisbility()', () => {
+    it('properly updates the visibility flag from "true" to "false" when not given a state', () => {
+      fs.writeFileSync(logDatabasePath,
+        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
+
+      assert.equal(logDatabaseController.isEntryVisible('000000'), true); // starts as true
+
+      logDatabaseController.toggleEntryVisbility('000000');
+
+      assert.equal(logDatabaseController.isEntryVisible('000000'), false); // now false
+    });
+
+    it('properly updates the visibility flag from "false" to "true" when not given a state', () => {
+      fs.writeFileSync(logDatabasePath,
+        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
+
+      assert.equal(logDatabaseController.isEntryVisible('111111'), false); // starts as false
+
+      logDatabaseController.toggleEntryVisbility('111111');
+
+      assert.equal(logDatabaseController.isEntryVisible('111111'), true); // now true
+    });
+
+    it('properly updates the visibility flag to given state regardless of initial value', () => {
+      fs.writeFileSync(logDatabasePath,
+        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
+
+      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
+
+      logDatabaseController.toggleEntryVisbility('111111', false);
+
+      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
     });
   });
 })

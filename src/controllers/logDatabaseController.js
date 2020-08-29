@@ -166,6 +166,18 @@ class logDatabaseController {
   }
   /**
    * @param {String} hash
+   * @returns {Boolean}
+   */
+  isEntryVisible(hash) {
+    const foundEntry = this.findEntry(hash);
+    if (foundEntry === undefined) {
+      return false;
+    }
+
+    return foundEntry.isVisible;
+  }
+  /**
+   * @param {String} hash
    * @param {Boolean} [toggleTo]
    * @returns {DatabaseEntry | undefined}
    */
@@ -173,10 +185,10 @@ class logDatabaseController {
     const entry = this.findEntry(hash);
     if (entry === undefined) return;
 
-    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.visibility;
+    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.isVisible;
     entry.visibility = newVisibility;
 
-    this.replaceEntry(has, entry);
+    this.replaceEntry(hash, entry);
   }
 }
 

@@ -34,11 +34,11 @@ class logDatabaseController {
     console.log(`Created new database at: ${path}.`);
   }
   /**
-   * @returns {Array}
+   * @returns {String}
    */
   export() {
     const databaseText = this.getDatabase();
-    const databaseArray = databaseText.split('\n');
+    return Buffer.from(databaseText, 'utf8');
   }
   // -- file functions
   /**
@@ -148,7 +148,7 @@ class logDatabaseController {
    */
   addEntry(newEntry) {
     return new Promise((resolve, reject) => {
-      fs.appendFile(this.databasePath, newEntry.export(), (err) => {
+      fs.appendFile(this.databasePath, newEntry.toString(), (err) => {
         if (err) return reject(err);
 
         resolve();

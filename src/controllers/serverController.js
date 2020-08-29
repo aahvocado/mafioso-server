@@ -19,13 +19,13 @@ const server = http.createServer((req, res) => {
 
     req.on('data', (buffer) => {
       fileChunks.push(buffer.toString());
-    })
+    });
 
     // after buffering, save to system
     req.on('end', () => {
       const fullText = fileChunks.join('');
       logDatabaseController.addNewFile(fullText);
-    })
+    });
   }
 });
 

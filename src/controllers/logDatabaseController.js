@@ -1,5 +1,6 @@
 import fs from 'fs';
 
+// import DatabaseEntry from 'classes/DatabaseEntry';
 import LogData from 'classes/LogData';
 
 const logDatabasePath = process.env['DB_PATH'];
@@ -43,7 +44,7 @@ class logDatabaseController {
     });
 
     // create new entry
-    this.addNewEntry(logData);
+    this.createNewEntry(logData);
   }
   /**
    * @param {Object} param
@@ -89,11 +90,18 @@ class logDatabaseController {
   }
   // -- database functions
   /**
+   * @returns {Buffer}
+   */
+  getDatabase() {
+    const dbBuffer = fs.readFileSync(logDatabasePath);
+    return dbBuffer.toString();
+  }
+  /**
    * @param {LogData} logData
    */
-  addNewEntry(logData) {
+  createNewEntry(logData) {
     const nowDate = new Date();
-    const newEntry = `${logData.logHash}\t${logData.charName}\t${nowDate.toDateString()}\n`
+    const newEntry = `${0}\t${logData.logHash}\t${logData.charName}\t${nowDate.toDateString()}\n`
 
     fs.appendFile(logDatabasePath, newEntry, (err) => {
       if (err) return console.error(err);

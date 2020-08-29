@@ -39,7 +39,7 @@ export default class DatabaseEntry {
     const entryPieces = cleanRow.split('\t');
 
     this.entryId = entryPieces[0];
-    this.visibility = Boolean(entryPieces[1]);
+    this.visibility = entryPieces[1];
     this.entryDate = entryPieces[2];
     this.hash = entryPieces[3];
     this.charName = entryPieces[4];

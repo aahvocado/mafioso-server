@@ -58,10 +58,32 @@ describe('logDatabaseController.js', () => {
     });
 
     it('returns true if found DatabaseEntry', () => {
-      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+      fs.writeFileSync(logDatabasePath,
+        '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
 
-      const doesItHave = logDatabaseController.hasEntry('000000');
+      const doesItHave = logDatabaseController.hasEntry('111111');
       assert.equal(doesItHave, true);
+    });
+  });
+
+  describe('replaceEntry()', () => {
+    it('properly replaces entry of given hash with the new entry', () => {
+      fs.writeFileSync(logDatabasePath,
+        '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
+        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
+        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
+      );
+
+      assert.equal(logDatabaseController.hasEntry('123456'), false); // should not have
+
+      const newEntry = new DatabaseEntry('1\tfalse\tFri Aug 29 2020\t123456\tdextrial\tCommunity Service\tSoftcore\n');
+      logDatabaseController.replaceEntry('111111', newEntry);
+
+      assert.equal(logDatabaseController.hasEntry('123456'), true); // newly replaced
+      assert.equal(logDatabaseController.hasEntry('111111'), false); // no longer in the db
     });
   });
 })

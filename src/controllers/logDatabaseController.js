@@ -11,6 +11,9 @@ const savePath = process.env['SAVE_PATH'];
 class logDatabaseController {
   /** @default */
   constructor() {
+    /** @type {String} */
+    this.databasePath = logDatabasePath;
+
     this.instantiate(logDatabasePath);
   }
   /**
@@ -20,6 +23,8 @@ class logDatabaseController {
    * @returns {String}
    */
   instantiate(path) {
+    this.databasePath = path; // if reinstatiating, update path
+
     if (fs.existsSync(path)) {
       console.warn(`Using existing database at: ${path}.`);
       return;
@@ -97,7 +102,7 @@ class logDatabaseController {
    * @returns {String}
    */
   getDatabase() {
-    const dbBuffer = fs.readFileSync(logDatabasePath);
+    const dbBuffer = fs.readFileSync(this.databasePath);
     return dbBuffer.toString();
   }
   /**
@@ -136,7 +141,7 @@ class logDatabaseController {
    */
   addEntry(newEntry) {
     return new Promise((resolve, reject) => {
-      fs.appendFile(logDatabasePath, newEntry.export(), (err) => {
+      fs.appendFile(this.databasePath, newEntry.export(), (err) => {
         if (err) return reject(err);
 
         resolve();
@@ -148,13 +153,16 @@ class logDatabaseController {
    * @param {DatabaseEntry} newEntry
    */
   replaceEntry(hash, newEntry) {
-    const databaseText = this.getDatabase();
+    const databaseText = this.getDatabase().slice();
 
     const oldEntry = this.findEntry(hash);
     const oldText = oldEntry.export();
     const newText = newEntry.export();
 
-    databaseText.replace(oldText, newText);
+    const newDatabaseText = databaseText.replace(oldText, newText);
+
+    // overwrite to DB
+    fs.writeFileSync(this.databasePath, newDatabaseText);
   }
   /**
    * @param {String} hash

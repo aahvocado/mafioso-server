@@ -22,4 +22,8 @@ export default class LogData {
   get difficultyName() {
     return logParserUtils.findMatcher(this.rawText, REGEX.PREAMBLE.DIFFICULTY);
   }
+  /** @type {String} */
+  get fileName() {
+    return `${this.logHash}.txt`;
+  }
 }

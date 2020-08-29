@@ -1,8 +1,6 @@
 import http from 'http';
 import fs from 'fs';
 
-import LogData from 'classes/LogData';
-
 import logDatabaseController from 'controllers/logDatabaseController';
 
 const savePath = process.env['SAVE_PATH'];
@@ -26,17 +24,7 @@ const server = http.createServer((req, res) => {
     // after buffering, save to system
     req.on('end', () => {
       const fullText = fileChunks.join('');
-      const logData = new LogData(fullText);
-
-      const fileName = `${logData.logHash}.txt`;
-      fs.writeFile(`${savePath}${fileName}`, fullText, (err) => {
-        if (err) return console.log(err);
-
-        console.log('...saved', fileName);
-      });
-
-      // create new entry
-      logDatabaseController.addNewEntry(logData);
+      logDatabaseController.addNewFile(fullText);
     })
   }
 });

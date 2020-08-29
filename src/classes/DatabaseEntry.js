@@ -1,7 +1,16 @@
 export default class DatabaseEntry {
-  /** @default */
+  /**
+   * @param {Object|String} logData
+   * @param {Number} entryId
+   */
   constructor(logData, entryId) {
     if (logData === undefined) {
+      return;
+    }
+
+    // if param is a string, can import from databaseRow
+    if (typeof logData === 'string') {
+      this.import(logData);
       return;
     }
 

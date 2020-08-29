@@ -30,10 +30,13 @@ class logDatabaseController {
    */
   addNewFile(fullText) {
     const logData = new LogData(fullText);
-    this.findLogFile({hash: logData.logHash});
+    // this.findLogFile({hash: logData.logHash});
+    if (this.hasEntry(logData.logHash)) {
 
-    fs.writeFile(this.getFilePath(logData.fileName), fullText, (err) => {
-      if (err) return console.log(err);
+    }
+
+    fs.writeFile(this.getFilePath({fileName: logData.fileName}), fullText, (err) => {
+      if (err) return console.error(err);
       console.log('...added new file', logData.fileName);
     });
 
@@ -45,11 +48,16 @@ class logDatabaseController {
    * @returns {String}
    */
   getFilePath(param) {
-    if (param.fileName !== undefined) {
+    const {
+      fileName,
+      hash,
+    } = param;
+
+    if (fileName !== undefined) {
       return `${savePath}${fileName}`;
     }
 
-    if (param.hash !== undefined) {
+    if (hash !== undefined) {
       return `${savePath}${hash}.txt`;
     }
   }
@@ -72,7 +80,21 @@ class logDatabaseController {
     const newEntry = `${logData.logHash}\t${logData.charName}\t${nowDate.toDateString()}\n`
 
     fs.appendFile(logDatabasePath, newEntry, (err) => {
-      if (err) return console.log(err);
+      if (err) return console.error(err);
+    })
+  }
+  /**
+   * @param {String} hash
+   * @returns {Boolean}
+   */
+  hasEntry(hash) {
+    const filePath = this.getFilePath({hash: hash});
+    fs.open(filePath, 'r', (err, fd) => {
+      if (err) return console.error(err);
+
+      console.log('fd', fd);
+
+      fs.close(fd, () => {});
     })
   }
 }

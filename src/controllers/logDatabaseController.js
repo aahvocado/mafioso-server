@@ -1,12 +1,15 @@
 import fs from 'fs';
 
-// import DatabaseEntry from 'classes/DatabaseEntry';
+import DatabaseEntry from 'classes/DatabaseEntry';
 import LogData from 'classes/LogData';
+
+import * as regexUtils from 'utilities/regexUtils';
 
 const logDatabasePath = process.env['DB_PATH'];
 const savePath = process.env['SAVE_PATH'];
 
 class logDatabaseController {
+  /** @default */
   constructor() {
     this.instantiate();
   }
@@ -29,20 +32,20 @@ class logDatabaseController {
   /**
    * @param {String} text
    */
-  async addNewFile(fullText) {
+  async addNewLog(fullText) {
     const logData = new LogData(fullText);
-    const hasLog = await this.hasLog(logData);
-    if (hasLog) {
-      console.log('... log already exists');
-      return;
-    }
 
-    fs.writeFile(this.getFilePath({fileName: logData.fileName}), fullText, (err) => {
+    const hasLog = await this.hasLog(logData);
+    if (hasLog) return console.warn('... log already exists');
+
+    // save the file on system
+    const filePath = this.getFilePath({fileName: logData.fileName});
+    fs.writeFile(filePath, fullText, (err) => {
       if (err) return console.error(err);
       console.log('... added new file', logData.fileName);
     });
 
-    // create new entry
+    // create new db entry
     this.createNewEntry(logData);
   }
   /**
@@ -93,6 +96,28 @@ class logDatabaseController {
   getDatabase() {
     const dbBuffer = fs.readFileSync(logDatabasePath);
     return dbBuffer.toString();
+  }
+  /**
+   * @param {String} hash
+   * @returns {Boolean}
+   */
+  hasEntry(hash) {
+    return this.findEntry(hash) !== undefined;
+  }
+  /**
+   * @param {String} hash
+   * @returns {DatabaseEntry | undefined}
+   */
+  findEntry(hash) {
+    const dbText = this.getDatabase();
+    const entryRegex = new RegExp(`^\\d+\\t${hash}.*`, 'mi');
+    const entryRow = regexUtils.findMatcher(dbText, entryRegex);
+    if (entryRow === undefined) {
+      return false;
+    }
+
+    const databaseEntry = new DatabaseEntry(entryRow);
+    return databaseEntry;
   }
   /**
    * @param {LogData} logData

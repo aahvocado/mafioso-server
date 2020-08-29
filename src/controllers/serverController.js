@@ -24,7 +24,7 @@ const server = http.createServer((req, res) => {
     // after buffering, save to system
     req.on('end', () => {
       const fullText = fileChunks.join('');
-      logDatabaseController.addNewFile(fullText);
+      logDatabaseController.addNewLog(fullText);
     });
   }
 });

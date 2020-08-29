@@ -1,6 +1,6 @@
 import REGEX from 'constants/REGEXES';
 
-import * as logParserUtils from 'utilities/logParserUtils';
+import * as regexUtils from 'utilities/regexUtils';
 
 export default class LogData {
   constructor(rawText) {
@@ -8,19 +8,19 @@ export default class LogData {
   }
   /** @type {String} */
   get logHash() {
-    return logParserUtils.findMatcher(this.rawText, REGEX.PREAMBLE.HASH);
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.HASH);
   }
   /** @type {String} */
   get charName() {
-    return logParserUtils.findMatcher(this.rawText, REGEX.PREAMBLE.NAME);
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.NAME);
   }
   /** @type {String} */
   get pathName() {
-    return logParserUtils.findMatcher(this.rawText, REGEX.PREAMBLE.PATH);
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.PATH);
   }
   /** @type {String} */
   get difficultyName() {
-    return logParserUtils.findMatcher(this.rawText, REGEX.PREAMBLE.DIFFICULTY);
+    return regexUtils.findMatcher(this.rawText, REGEX.PREAMBLE.DIFFICULTY);
   }
   /** @type {String} */
   get fileName() {

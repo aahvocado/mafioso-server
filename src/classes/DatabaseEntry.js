@@ -1,7 +1,7 @@
 export default class DatabaseEntry {
   /** @default */
-  constructor(text) {
-    const cells = text.split('\t');
+  constructor(entryRow) {
+    const cells = entryRow.split('\t');
 
     /** @type {String} */
     this.entryId = cells[0];

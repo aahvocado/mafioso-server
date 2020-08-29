@@ -31,9 +31,8 @@ class logDatabaseController {
    */
   async addNewFile(fullText) {
     const logData = new LogData(fullText);
-
-    const hasFile = await this.hasFile({hash: logData.logHash});
-    if (hasFile) {
+    const hasLog = await this.hasLog(logData);
+    if (hasLog) {
       console.log('... log already exists');
       return;
     }
@@ -65,32 +64,31 @@ class logDatabaseController {
     }
   }
   /**
-   * @param {Object} param
-   * @returns {File}
-   */
-  findLogFile(param) {
-    const filePath = this.getFilePath(param);
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      console.log(`${filePath} ${err ? 'does not exist' : 'exists'}`);
-    });
-  }
-  /**
-   * @param {String} hash
+   * @param {LogData} logData
    * @returns {Boolean}
    */
-  hasFile(param) {
-    const filePath = this.getFilePath(param);
+  hasLog(logData) {
+    const logFilePath = this.getFilePath({fileName: logData.fileName});
     try {
-      fs.accessSync(filePath, fs.constants.R_OK);
+      fs.accessSync(logFilePath, fs.constants.R_OK);
       return true;
 
     } catch (err) {
       return false;
     }
   }
+  /**
+   * @param {LogData} logData
+   * @returns {String}
+   */
+  getLog(logData) {
+    const logFilePath = this.getFilePath({fileName: logData.fileName});
+    const dbBuffer = fs.readFileSync(logFilePath);
+    return dbBuffer.toString();
+  }
   // -- database functions
   /**
-   * @returns {Buffer}
+   * @returns {String}
    */
   getDatabase() {
     const dbBuffer = fs.readFileSync(logDatabasePath);

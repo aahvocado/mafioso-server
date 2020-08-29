@@ -28,16 +28,18 @@ class logDatabaseController {
   /**
    * @param {String} text
    */
-  addNewFile(fullText) {
+  async addNewFile(fullText) {
     const logData = new LogData(fullText);
-    // this.findLogFile({hash: logData.logHash});
-    if (this.hasEntry(logData.logHash)) {
 
+    const hasFile = await this.hasFile({hash: logData.logHash});
+    if (hasFile) {
+      console.log('... log already exists');
+      return;
     }
 
     fs.writeFile(this.getFilePath({fileName: logData.fileName}), fullText, (err) => {
       if (err) return console.error(err);
-      console.log('...added new file', logData.fileName);
+      console.log('... added new file', logData.fileName);
     });
 
     // create new entry
@@ -62,14 +64,28 @@ class logDatabaseController {
     }
   }
   /**
-   * @param {Object} params
+   * @param {Object} param
    * @returns {File}
    */
-  findLogFile(params) {
-    const filePath = this.getFilePath(params);
+  findLogFile(param) {
+    const filePath = this.getFilePath(param);
     fs.access(filePath, fs.constants.F_OK, (err) => {
       console.log(`${filePath} ${err ? 'does not exist' : 'exists'}`);
     });
+  }
+  /**
+   * @param {String} hash
+   * @returns {Boolean}
+   */
+  hasFile(param) {
+    const filePath = this.getFilePath(param);
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+      return true;
+
+    } catch (err) {
+      return false;
+    }
   }
   // -- database functions
   /**
@@ -81,20 +97,6 @@ class logDatabaseController {
 
     fs.appendFile(logDatabasePath, newEntry, (err) => {
       if (err) return console.error(err);
-    })
-  }
-  /**
-   * @param {String} hash
-   * @returns {Boolean}
-   */
-  hasEntry(hash) {
-    const filePath = this.getFilePath({hash: hash});
-    fs.open(filePath, 'r', (err, fd) => {
-      if (err) return console.error(err);
-
-      console.log('fd', fd);
-
-      fs.close(fd, () => {});
     })
   }
 }

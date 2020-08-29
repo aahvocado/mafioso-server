@@ -121,14 +121,13 @@ class logDatabaseController {
    */
   findEntry(hash) {
     const databaseText = this.getDatabase();
-    const entryRegex = new RegExp(`^\\d+\\t${hash}.*`, 'mi');
+    const entryRegex = new RegExp(`^\\d+.*${hash}.*`, 'mi');
     const entryRow = regexUtils.findMatcher(databaseText, entryRegex);
     if (entryRow === undefined) {
       return undefined;
     }
 
-    const databaseEntry = new DatabaseEntry()
-    databaseEntry.import(entryRow);
+    const databaseEntry = new DatabaseEntry(entryRow);
     return databaseEntry;
   }
   /**

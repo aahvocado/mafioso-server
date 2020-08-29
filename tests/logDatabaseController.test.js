@@ -11,29 +11,43 @@ const logDatabasePath = process.env['DB_PATH'];
 
 describe('logDatabaseController.js', () => {
   describe('addEntry()', () => {
-    it('properly adds a DatabaseEntry into a empty database log', async () => {
+    it('properly adds a DatabaseEntry into a empty database', async () => {
       fs.writeFileSync(logDatabasePath, ''); // empty mock txt
 
-      const dbEntry1 = new DatabaseEntry();
-      dbEntry1.import('0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service Hardcore');
-
+      const dbEntry1 = new DatabaseEntry('0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore');
       await logDatabaseController.addEntry(dbEntry1);
 
       assert.equal(logDatabaseController.entriesCount(), 1);
     })
 
-    it('properly adds multiple DatabaseEntry into an existing database log', async () => {
-      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service Hardcore\n');
+    it('properly adds multiple DatabaseEntry into an existing database', async () => {
+      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
 
-      const dbEntry1 = new DatabaseEntry();
-      dbEntry1.import('1\tfalse\tFri Aug 28 2020\t111111\tdextrial\tCommunity Service Hardcore\n');
+      const dbEntry1 = new DatabaseEntry('1\tfalse\tFri Aug 28 2020\t111111\tdextrial\tCommunity Service\tHardcore\n');
       await logDatabaseController.addEntry(dbEntry1);
 
-      const dbEntry2 = new DatabaseEntry();
-      dbEntry2.import('2\tfalse\tFri Aug 28 2020\t222222\tdextrial\tCommunity Service Hardcore\n');
+      const dbEntry2 = new DatabaseEntry('2\tfalse\tFri Aug 28 2020\t222222\tdextrial\tCommunity Service\tHardcore\n');
       await logDatabaseController.addEntry(dbEntry2);
 
       assert.equal(logDatabaseController.entriesCount(), 3);
+    })
+  })
+
+  describe('findEntry()', () => {
+    it('finds `undefined` in an empty database', () => {
+      fs.writeFileSync(logDatabasePath, ''); // empty mock txt
+
+      const foundEntry = logDatabaseController.findEntry('000000');
+
+      assert.equal(foundEntry, undefined);
+    });
+
+    it('returns DatabaseEntry based on given hash', async () => {
+      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+
+      const foundEntry = logDatabaseController.findEntry('000000');
+
+      assert.equal(foundEntry.entryId, '0');
     })
   })
 })

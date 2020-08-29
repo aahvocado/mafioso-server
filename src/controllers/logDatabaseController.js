@@ -11,20 +11,22 @@ const savePath = process.env['SAVE_PATH'];
 class logDatabaseController {
   /** @default */
   constructor() {
-    this.instantiate();
+    this.instantiate(logDatabasePath);
   }
   /**
    * creates the db txt file
+   *
+   * @param {String} path
    * @returns {String}
    */
-  instantiate() {
-    if (fs.existsSync(logDatabasePath)) {
-      console.warn('"log-database.txt" already exists.');
+  instantiate(path) {
+    if (fs.existsSync(path)) {
+      console.warn(`Have existing database at: ${path}.`);
       return;
     }
 
-    fs.writeFileSync(logDatabasePath, '');
-    console.log('Created new "log-database.txt".');
+    fs.writeFileSync(path, '');
+    console.log(`Created new database at: ${path}.`);
   }
   // -- file functions
   /**
@@ -33,10 +35,12 @@ class logDatabaseController {
   async addNewLog(fullText) {
     const logData = new LogData(fullText);
 
-    const hasLog = await this.hasLog(logData);
-    if (hasLog) return console.warn('... log already exists');
+    // we'll check is db has the entry (regardless if physical file exists)
+    if (this.hasEntry(logData.logHash)) {
+      return console.warn('... log already exists');
+    }
 
-    // save the file on system
+    // save the file on system, possible overriding existing
     const filePath = this.getFilePath({fileName: logData.fileName});
     fs.writeFile(filePath, fullText, (err) => {
       if (err) return console.error(err);
@@ -44,7 +48,8 @@ class logDatabaseController {
     });
 
     // create new db entry
-    this.createNewEntry(logData);
+    const newEntry = new DatabaseEntry(logData, this.entriesCount());
+    return this.addEntry(newEntry);
   }
   /**
    * @param {Object} param
@@ -98,10 +103,10 @@ class logDatabaseController {
   /**
    * @returns {Number}
    */
-  getEntriesCount() {
+  entriesCount() {
     const databaseText = this.getDatabase();
-    const entriesCount = (databaseText.match(/\n/g) || []).length;
-    return entriesCount;
+    const count = (databaseText.match(/\n/g) || []).length;
+    return count;
   }
   /**
    * @param {String} hash
@@ -119,19 +124,24 @@ class logDatabaseController {
     const entryRegex = new RegExp(`^\\d+\\t${hash}.*`, 'mi');
     const entryRow = regexUtils.findMatcher(databaseText, entryRegex);
     if (entryRow === undefined) {
-      return false;
+      return undefined;
     }
 
-    const databaseEntry = new DatabaseEntry().import(entryRow);
+    const databaseEntry = new DatabaseEntry()
+    databaseEntry.import(entryRow);
     return databaseEntry;
   }
   /**
-   * @param {LogData} logData
+   * @async
+   * @param {DatabaseEntry} newEntry
    */
-  createNewEntry(logData) {
-    const newEntry = new DatabaseEntry(logData, this.getEntriesCount());
-    fs.appendFile(logDatabasePath, newEntry.export(), (err) => {
-      if (err) return console.error(err);
+  addEntry(newEntry) {
+    return new Promise((resolve, reject) => {
+      fs.appendFile(logDatabasePath, newEntry.export(), (err) => {
+        if (err) return reject(err);
+
+        resolve();
+      })
     })
   }
   /**

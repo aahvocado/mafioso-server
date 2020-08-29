@@ -99,8 +99,8 @@ class logDatabaseController {
    * @returns {Number}
    */
   getEntriesCount() {
-    const dbText = this.getDatabase();
-    const entriesCount = (dbText.match(/\n/g) || []).length;
+    const databaseText = this.getDatabase();
+    const entriesCount = (databaseText.match(/\n/g) || []).length;
     return entriesCount;
   }
   /**
@@ -115,9 +115,9 @@ class logDatabaseController {
    * @returns {DatabaseEntry | undefined}
    */
   findEntry(hash) {
-    const dbText = this.getDatabase();
+    const databaseText = this.getDatabase();
     const entryRegex = new RegExp(`^\\d+\\t${hash}.*`, 'mi');
-    const entryRow = regexUtils.findMatcher(dbText, entryRegex);
+    const entryRow = regexUtils.findMatcher(databaseText, entryRegex);
     if (entryRow === undefined) {
       return false;
     }
@@ -133,6 +133,33 @@ class logDatabaseController {
     fs.appendFile(logDatabasePath, newEntry.export(), (err) => {
       if (err) return console.error(err);
     })
+  }
+  /**
+   * @param {String} hash
+   * @param {DatabaseEntry} newEntry
+   */
+  replaceEntry(hash, newEntry) {
+    const databaseText = this.getDatabase();
+
+    const oldEntry = this.findEntry(hash);
+    const oldText = oldEntry.export();
+    const newText = newEntry.export();
+
+    databaseText.replace(oldText, newText);
+  }
+  /**
+   * @param {String} hash
+   * @param {Boolean} [toggleTo]
+   * @returns {DatabaseEntry | undefined}
+   */
+  toggleEntryVisbility(hash, toggleTo) {
+    const entry = this.findEntry(hash);
+    if (entry === undefined) return;
+
+    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.visibility;
+    entry.visibility = newVisibility;
+
+    this.replaceEntry(has, entry);
   }
 }
 

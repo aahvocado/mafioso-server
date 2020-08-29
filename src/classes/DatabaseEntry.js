@@ -26,7 +26,8 @@ export default class DatabaseEntry {
    * @param {String} databaseRow
    */
   import(databaseRow) {
-    const entryPieces = databaseRow.split('\t');
+    const cleanRow = databaseRow.replace('\n', '');
+    const entryPieces = cleanRow.split('\t');
 
     this.entryId = entryPieces[0];
     this.visibility = Boolean(entryPieces[1]);

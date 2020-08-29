@@ -21,7 +21,7 @@ class logDatabaseController {
    */
   instantiate(path) {
     if (fs.existsSync(path)) {
-      console.warn(`Have existing database at: ${path}.`);
+      console.warn(`Using existing database at: ${path}.`);
       return;
     }
 

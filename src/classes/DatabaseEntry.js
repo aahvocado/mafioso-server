@@ -23,7 +23,7 @@ export default class DatabaseEntry {
     /** @type {String} */
     this.entryDate = createDate.toDateString();
     /** @type {String} */
-    this.hash = logData.logHash;
+    this.logHash = logData.logHash;
     /** @type {String} */
     this.charName = logData.charName;
     /** @type {String} */
@@ -53,7 +53,7 @@ export default class DatabaseEntry {
     this.entryId = entryPieces[0];
     this.visibility = entryPieces[1];
     this.entryDate = entryPieces[2];
-    this.hash = entryPieces[3];
+    this.logHash = entryPieces[3];
     this.charName = entryPieces[4];
     this.pathName = entryPieces[5];
     this.difficultyName = entryPieces[6];
@@ -61,9 +61,22 @@ export default class DatabaseEntry {
     this.turnCount = entryPieces[8];
   }
   /**
-   * @returns {String}
+   * @returns {Object}
    */
   export() {
-    return `${this.entryId}\t${this.visibility}\t${this.entryDate}\t${this.hash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\n`;
+    return {
+      logHash: this.logHash,
+      charName: this.charName,
+      pathName: this.pathName,
+      difficultyName: this.difficultyName,
+      dayCount: this.dayCount,
+      turnCount: this.turnCount,
+    }
+  }
+  /**
+   * @returns {String}
+   */
+  toString() {
+    return `${this.entryId}\t${this.visibility}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\n`;
   }
 }

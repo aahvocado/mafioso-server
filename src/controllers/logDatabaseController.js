@@ -33,6 +33,13 @@ class logDatabaseController {
     fs.writeFileSync(path, '');
     console.log(`Created new database at: ${path}.`);
   }
+  /**
+   * @returns {Array}
+   */
+  export() {
+    const databaseText = this.getDatabase();
+    const databaseArray = databaseText.split('\n');
+  }
   // -- file functions
   /**
    * @param {String} text
@@ -156,8 +163,8 @@ class logDatabaseController {
     const databaseText = this.getDatabase().slice();
 
     const oldEntry = this.findEntry(hash);
-    const oldText = oldEntry.export();
-    const newText = newEntry.export();
+    const oldText = oldEntry.toString();
+    const newText = newEntry.toString();
 
     const newDatabaseText = databaseText.replace(oldText, newText);
 

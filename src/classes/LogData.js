@@ -37,9 +37,22 @@ export default class LogData {
     return `${this.logHash}.txt`;
   }
   /**
-   * @returns {String}
+   * @returns {Object}
    */
   export() {
+    return {
+      logHash: this.logHash,
+      charName: this.charName,
+      pathName: this.pathName,
+      difficultyName: this.difficultyName,
+      dayCount: this.dayCount,
+      turnCount: this.turnCount,
+    }
+  }
+  /**
+   * @returns {String}
+   */
+  toString() {
     return this.rawText;
   }
 }

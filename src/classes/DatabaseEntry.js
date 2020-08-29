@@ -1,24 +1,42 @@
 export default class DatabaseEntry {
   /** @default */
-  constructor(entryRow) {
-    const cells = entryRow.split('\t');
+  constructor(logData, entryId) {
+    if (logData === undefined) {
+      return;
+    }
+
+    const createDate = new Date();
 
     /** @type {String} */
-    this.entryRow = entryRow;
-
-    /** @type {String} */
-    this.entryId = cells[0];
-    /** @type {String} */
-    this.hash = cells[1];
-    /** @type {String} */
-    this.charName = cells[2];
+    this.entryId = entryId;
     /** @type {Date} */
-    this.entryDate = new Date(cells[3]);
+    this.entryDate = createDate.toDateString();
+    /** @type {String} */
+    this.hash = logData.logHash;
+    /** @type {String} */
+    this.charName = logData.charName;
+    /** @type {String} */
+    this.pathName = logData.pathName;
+    /** @type {String} */
+    this.difficultyName = logData.difficultyName;
+  }
+  /**
+   * @param {String} databaseRow
+   */
+  import(databaseRow) {
+    const entryPieces = databaseRow.split('\t');
+
+    this.entryId = entryPieces[0];
+    this.entryDate = entryPieces[1];
+    this.hash = entryPieces[2];
+    this.charName = entryPieces[3];
+    this.pathName = entryPieces[4];
+    this.difficultyName = entryPieces[5];
   }
   /**
    * @returns {String}
    */
   export() {
-    return this.entryRow;
+    return `${this.entryId}\t${this.entryDate}\t${this.hash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\n`;
   }
 }

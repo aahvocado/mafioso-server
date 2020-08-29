@@ -15,6 +15,7 @@ class logDatabaseController {
   }
   /**
    * creates the db txt file
+   * @returns {String}
    */
   instantiate() {
     if (fs.existsSync(logDatabasePath)) {
@@ -22,11 +23,8 @@ class logDatabaseController {
       return;
     }
 
-    fs.writeFile(logDatabasePath, '', (err) => {
-     if (err) return console.log(err);
-
-      console.log('Created "log-database.txt".');
-    });
+    fs.writeFileSync(logDatabasePath, '');
+    console.log('Created new "log-database.txt".');
   }
   // -- file functions
   /**
@@ -98,6 +96,14 @@ class logDatabaseController {
     return dbBuffer.toString();
   }
   /**
+   * @returns {Number}
+   */
+  getEntriesCount() {
+    const dbText = this.getDatabase();
+    const entriesCount = (dbText.match(/\n/g) || []).length;
+    return entriesCount;
+  }
+  /**
    * @param {String} hash
    * @returns {Boolean}
    */
@@ -116,17 +122,15 @@ class logDatabaseController {
       return false;
     }
 
-    const databaseEntry = new DatabaseEntry(entryRow);
+    const databaseEntry = new DatabaseEntry().import(entryRow);
     return databaseEntry;
   }
   /**
    * @param {LogData} logData
    */
   createNewEntry(logData) {
-    const nowDate = new Date();
-    const newEntry = `${0}\t${logData.logHash}\t${logData.charName}\t${nowDate.toDateString()}\n`
-
-    fs.appendFile(logDatabasePath, newEntry, (err) => {
+    const newEntry = new DatabaseEntry(logData, this.getEntriesCount());
+    fs.appendFile(logDatabasePath, newEntry.export(), (err) => {
       if (err) return console.error(err);
     })
   }

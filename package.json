@@ -4,7 +4,7 @@
   "description": "Server for KoL-Mafioso",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests",
+    "test": "mocha tests -r @babel/register -r babel-polyfill -r dotenv/config",
     "compile": "babel src -d compiled",
     "start": "npm run compile && node -r dotenv/config compiled/index.js"
   },
@@ -18,6 +18,8 @@
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
+    "babel-polyfill": "^6.26.0",
     "mocha": "^8.1.3"
   }
 }

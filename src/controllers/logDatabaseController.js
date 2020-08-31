@@ -37,7 +37,8 @@ class logDatabaseController {
    * @returns {String}
    */
   export() {
-    const databaseText = this.getDatabase();
+    const dbBuffer = fs.readFileSync(this.databasePath);
+    const databaseText = dbBuffer.toString();
     return Buffer.from(databaseText, 'utf8');
   }
   // -- file functions
@@ -106,11 +107,22 @@ class logDatabaseController {
   }
   // -- database functions
   /**
+   * @param {Object} [config]
    * @returns {String}
    */
-  getDatabase() {
+  getDatabase(config = {}) {
+    const {isVisible} = config;
+
     const dbBuffer = fs.readFileSync(this.databasePath);
-    return dbBuffer.toString();
+    const databaseText = dbBuffer.toString();
+    const dataEntryList = databaseText.split('\n').map((dataRow) => new DatabaseEntry(dataRow));
+    return dataEntryList.filter((dataEntry) => {
+      if (isVisible !== undefined) {
+        return dataEntry.isVisible === isVisible;
+      }
+
+      return true;
+    });
   }
   /**
    * @returns {Number}

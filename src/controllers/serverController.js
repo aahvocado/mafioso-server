@@ -37,9 +37,12 @@ const server = http.createServer((req, res) => {
 
   // asking for a list of entries
   if (req.url === '/api/getSharedLogs' && req.method.toLowerCase() === 'get') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    const databaseText = logDatabaseController.export();
-    res.end(databaseText);
+    console.log('Shared logs requested...')
+
+    const databaseList = logDatabaseController.getDatabase({isVisible: true});
+    const databaseJSON = JSON.stringify(databaseList.map((databaseEntry) => databaseEntry.export()));
+    res.write(databaseJSON);
+    res.end();
   }
 });
 

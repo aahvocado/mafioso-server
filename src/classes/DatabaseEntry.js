@@ -19,7 +19,7 @@ export default class DatabaseEntry {
     /** @type {String} */
     this.entryId = entryId;
     /** @type {String} */
-    this.visibility = 'false';
+    this.visibility = 'true';
     /** @type {String} */
     this.entryDate = createDate.toDateString();
     /** @type {String} */
@@ -77,6 +77,6 @@ export default class DatabaseEntry {
    * @returns {String}
    */
   toString() {
-    return `${this.entryId}\t${this.visibility}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\n`;
+    return `${this.entryId}\t${this.visibility}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
   }
 }

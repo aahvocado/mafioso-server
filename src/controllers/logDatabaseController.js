@@ -36,7 +36,7 @@ class logDatabaseController {
   /**
    * @returns {String}
    */
-  export() {
+  toString() {
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
     return Buffer.from(databaseText, 'utf8');
@@ -100,15 +100,27 @@ class logDatabaseController {
    * @param {LogData} logData
    * @returns {String}
    */
-  getLog(logData) {
+  findLog(logData) {
     const logFilePath = this.getFilePath({fileName: logData.fileName});
     const dbBuffer = fs.readFileSync(logFilePath);
     return dbBuffer.toString();
   }
+  /**
+   * @param {String} hash
+   * @returns {String}
+   */
+  getLogByHash(hash) {
+    const logData = this.findEntry(hash);
+    if (logData === undefined) {
+      console.error(`Unable to find log entry for "${hash}"`);
+      return;
+    }
+    return this.findLog(logData);
+  }
   // -- database functions
   /**
    * @param {Object} [config]
-   * @returns {String}
+   * @returns {Array<DatabaseEntry>}
    */
   getDatabase(config = {}) {
     const {isVisible} = config;
@@ -128,9 +140,7 @@ class logDatabaseController {
    * @returns {Number}
    */
   entriesCount() {
-    const databaseText = this.getDatabase();
-    const count = (databaseText.match(/\n/g) || []).length;
-    return count;
+    return this.getDatabase().length;
   }
   /**
    * @param {String} hash
@@ -144,15 +154,8 @@ class logDatabaseController {
    * @returns {DatabaseEntry | undefined}
    */
   findEntry(hash) {
-    const databaseText = this.getDatabase();
-    const entryRegex = new RegExp(`^\\d+.*${hash}.*`, 'mi');
-    const entryRow = regexUtils.findMatcher(databaseText, entryRegex);
-    if (entryRow === undefined) {
-      return undefined;
-    }
-
-    const databaseEntry = new DatabaseEntry(entryRow);
-    return databaseEntry;
+    const database = this.getDatabase();
+    return database.find((databaseEntry) => databaseEntry.logHash === hash);
   }
   /**
    * @async
@@ -172,7 +175,7 @@ class logDatabaseController {
    * @param {DatabaseEntry} newEntry
    */
   replaceEntry(hash, newEntry) {
-    const databaseText = this.getDatabase().slice();
+    const databaseText = this.toString().slice();
 
     const oldEntry = this.findEntry(hash);
     const oldText = oldEntry.toString();

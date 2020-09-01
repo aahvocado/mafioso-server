@@ -71,5 +71,22 @@ server.get('/api/log/:logHash', (req, res) => {
 
   console.log('...found and sent!');
 })
+/**
+ * modify a log
+ */
+server.post('/api/update/:logHash', (req, res) => {
+  console.log('Updating database entry...');
+
+  try {
+    const {status} = req.query;
+    logDatabaseController.updateEntryStatus(req.params.logHash, status);
+    res.status(200).send();
+    console.error('...success.');
+
+  } catch (err) {
+    res.status(400).send(err);
+    console.error('...failed.');
+  }
+})
 
 export default server;

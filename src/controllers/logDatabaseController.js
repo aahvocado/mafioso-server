@@ -5,16 +5,16 @@ import LogData from 'classes/LogData';
 
 import * as regexUtils from 'utilities/regexUtils';
 
-const logDatabasePath = process.env['DB_PATH'];
-const savePath = process.env['SAVE_PATH'];
+const DB_PATH = process.env['DB_PATH'];
+const SAVE_PATH = process.env['SAVE_PATH'];
 
 class logDatabaseController {
   /** @default */
   constructor() {
     /** @type {String} */
-    this.databasePath = logDatabasePath;
+    this.databasePath = DB_PATH;
 
-    this.instantiate(logDatabasePath);
+    this.instantiate(DB_PATH);
   }
   /**
    * creates the db txt file
@@ -76,11 +76,11 @@ class logDatabaseController {
     } = param;
 
     if (fileName !== undefined) {
-      return `${savePath}${fileName}`;
+      return `${SAVE_PATH}/${fileName}`;
     }
 
     if (hash !== undefined) {
-      return `${savePath}${hash}.txt`;
+      return `${SAVE_PATH}/${hash}.txt`;
     }
   }
   /**

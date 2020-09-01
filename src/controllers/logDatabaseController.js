@@ -143,7 +143,10 @@ class logDatabaseController {
 
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
-    const dataEntryList = databaseText.split('\n').map((dataRow) => new DatabaseEntry(dataRow));
+    const dataEntryList = databaseText
+      .split('\n')
+      .map((dataRow) => new DatabaseEntry(dataRow))
+      .filter((dataEntry) => dataEntry.isValid);
 
     // return everything if status is any
     if (status === DATABASE_ENTRY_STATUS.ANY || status === undefined) {
@@ -152,8 +155,6 @@ class logDatabaseController {
 
     const optionKeys = Object.keys(options);
     return dataEntryList.filter((dataEntry) => {
-      if (!dataEntry.isValid) return false;
-
       return !optionKeys.some((optionName) => databaseEntry[optionName] !== options[optionName]);
     });
   }

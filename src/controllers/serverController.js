@@ -3,6 +3,7 @@ import express from 'express';
 import logDatabaseController from 'controllers/logDatabaseController';
 
 const ACCEPTED_ORIGINS = process.env['ACCEPTED_ORIGINS'];
+const ACCEPTED_ROLES = process.env['ACCEPTED_ROLES'];
 
 /**
  * start an express server
@@ -78,7 +79,13 @@ server.post('/api/update/:logHash', (req, res) => {
   console.log('Updating database entry...');
 
   try {
-    const {status} = req.query;
+    const {status, role} = req.query;
+    if (role !== ACCEPTED_ROLES) {
+      res.status(401).send();
+      console.error('...rejected.');
+      return;
+    }
+
     logDatabaseController.updateEntryStatus(req.params.logHash, status);
     res.status(200).send();
     console.error('...success.');

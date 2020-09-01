@@ -132,31 +132,29 @@ class logDatabaseController {
   }
   // -- database functions
   /**
-   * @param {Object} [config]
+   * @param {Object} [options]
    * @returns {Array<DatabaseEntry>}
    */
-  getDatabase(config = {}) {
+  getDatabase(options = {}) {
     const {
       isActive,
-      status = DATABASE_ENTRY_STATUS.ACTIVE,
-    } = config;
+      status = DATABASE_ENTRY_STATUS.ANY,
+    } = options;
 
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
     const dataEntryList = databaseText.split('\n').map((dataRow) => new DatabaseEntry(dataRow));
+
+    // return everything if status is any
+    if (status === DATABASE_ENTRY_STATUS.ANY || status === undefined) {
+      return dataEntryList;
+    }
+
+    const optionKeys = Object.keys(options);
     return dataEntryList.filter((dataEntry) => {
       if (!dataEntry.isValid) return false;
 
-      if (isActive !== undefined) {
-        return dataEntry.isActive === isActive;
-      }
-
-      // any means all
-      if (status === DATABASE_ENTRY_STATUS.ANY) {
-        return true;
-      }
-
-      return true;
+      return !optionKeys.some((optionName) => databaseEntry[optionName] !== options[optionName]);
     });
   }
   /**
@@ -177,7 +175,7 @@ class logDatabaseController {
    * @returns {DatabaseEntry | undefined}
    */
   findEntry(hash) {
-    const database = this.getDatabase();
+    const database = this.getDatabase({status: DATABASE_ENTRY_STATUS.ANY});
     return database.find((databaseEntry) => databaseEntry.logHash === hash);
   }
   /**

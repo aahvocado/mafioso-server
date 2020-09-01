@@ -52,7 +52,7 @@ export default class DatabaseEntry {
   }
   /** @type {String} */
   get logHash() {
-    return this.logData.logHash;
+    return String(this.logData.logHash);
   }
   /** @type {String} */
   get logText() {

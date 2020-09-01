@@ -2,31 +2,44 @@ import assert from 'assert';
 import fs from 'fs';
 
 import DatabaseEntry from 'classes/DatabaseEntry';
-import LogData from 'classes/LogData';
+
+import DATABASE_ENTRY_STATUS from 'constants/DATABASE_ENTRY_STATUSES';
 
 import logDatabaseController from 'controllers/logDatabaseController';
 
-const logDatabasePath = process.env['DB_PATH'];
+const DB_PATH = process.env['DB_PATH'];
 
 describe('logDatabaseController.js', () => {
+  let genericEntry;
+
+  beforeEach(() => {
+    genericEntry = new DatabaseEntry({
+      logHash: 'aaaaaa',
+      characterName: 'unit-test',
+      pathName: 'Community Service',
+      difficultyName: 'Hardcore',
+      dayCount: '3',
+      turnCount: '300',
+    }, '000');
+  });
+
   describe('addEntry()', () => {
     it('properly adds a DatabaseEntry into a empty database', async () => {
-      fs.writeFileSync(logDatabasePath, ''); // empty mock txt
+      fs.writeFileSync(DB_PATH, ''); // empty mock txt
 
-      const dbEntry1 = new DatabaseEntry('0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore');
-      await logDatabaseController.addEntry(dbEntry1);
+      await logDatabaseController.addEntry(genericEntry);
 
       assert.equal(logDatabaseController.entriesCount(), 1);
     })
 
     it('properly adds multiple DatabaseEntry into an existing database', async () => {
-      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+      fs.writeFileSync(DB_PATH, genericEntry.toString());
 
-      const dbEntry1 = new DatabaseEntry('1\tfalse\tFri Aug 28 2020\t111111\tdextrial\tCommunity Service\tHardcore\n');
-      await logDatabaseController.addEntry(dbEntry1);
+      const entryA = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
+      await logDatabaseController.addEntry(entryA);
 
-      const dbEntry2 = new DatabaseEntry('2\tfalse\tFri Aug 28 2020\t222222\tdextrial\tCommunity Service\tHardcore\n');
-      await logDatabaseController.addEntry(dbEntry2);
+      const entryB = new DatabaseEntry({logHash: 'cccccc'}, '222');
+      await logDatabaseController.addEntry(entryB);
 
       assert.equal(logDatabaseController.entriesCount(), 3);
     })
@@ -34,112 +47,102 @@ describe('logDatabaseController.js', () => {
 
   describe('findEntry()', () => {
     it('finds `undefined` in an empty database', () => {
-      fs.writeFileSync(logDatabasePath, ''); // empty mock txt
+      fs.writeFileSync(DB_PATH, ''); // empty mock txt
 
-      const foundEntry = logDatabaseController.findEntry('000000');
+      const foundEntry = logDatabaseController.findEntry('aaaaaa');
       assert.equal(foundEntry, undefined);
     });
 
     it('returns DatabaseEntry based on given hash', async () => {
-      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+      fs.writeFileSync(DB_PATH, genericEntry.toString());
 
-      const foundEntry = logDatabaseController.findEntry('000000');
-      assert.equal(foundEntry.entryId, '0');
+      const foundEntry = logDatabaseController.findEntry('aaaaaa');
+      assert.equal(foundEntry.entryId, '000');
     })
   })
 
   describe('hasEntry()', () => {
     it('returns false if unable to find hash', () => {
-      fs.writeFileSync(logDatabasePath, '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n');
+      fs.writeFileSync(DB_PATH, genericEntry.toString());
 
-      const doesItHave = logDatabaseController.hasEntry('123456');
+      const doesItHave = logDatabaseController.hasEntry('abcdef');
       assert.equal(doesItHave, false);
     });
 
     it('returns true if found DatabaseEntry', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\tfalse\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc'}, '222');
+      const entryD = new DatabaseEntry({logHash: 'dddddd'}, '333');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString() + entryD.toString());
 
-      const doesItHave = logDatabaseController.hasEntry('111111');
+      const doesItHave = logDatabaseController.hasEntry('bbbbbb');
       assert.equal(doesItHave, true);
     });
   });
 
   describe('replaceEntry()', () => {
     it('properly replaces entry of given hash with the new entry', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc'}, '222');
+      const entryD = new DatabaseEntry({logHash: 'dddddd'}, '333');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString() + entryD.toString());
 
-      assert.equal(logDatabaseController.hasEntry('123456'), false); // should not exist
+      assert.equal(logDatabaseController.hasEntry('abcdef'), false); // should not exist
 
-      const newEntry = new DatabaseEntry('1\tfalse\tFri Aug 29 2020\t123456\tdextrial\tCommunity Service\tSoftcore\n');
-      logDatabaseController.replaceEntry('111111', newEntry);
+      const newEntry = new DatabaseEntry({logHash: 'abcdef'}, '444');
+      logDatabaseController.replaceEntry('bbbbbb', newEntry);
 
-      assert.equal(logDatabaseController.hasEntry('123456'), true); // newly replaced
-      assert.equal(logDatabaseController.hasEntry('111111'), false); // no longer in the db
+      assert.equal(logDatabaseController.hasEntry('abcdef'), true); // newly replaced
+      assert.equal(logDatabaseController.hasEntry('bbbbbb'), false); // no longer in the db
     });
   });
 
-  describe('isEntryVisible()', () => {
-    it('returns a boolean value of the DatabaseEntrys visibility flag', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+  describe('isEntryActive()', () => {
+    it('returns a boolean value of the active state of Database Entry', () => {
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
-      assert.equal(logDatabaseController.isEntryVisible('000000'), true);
-      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
+      assert.equal(logDatabaseController.isEntryActive('bbbbbb'), true);
+      assert.equal(logDatabaseController.isEntryActive('cccccc'), false);
     });
   });
 
-  describe('toggleEntryVisbility()', () => {
-    it('properly updates the visibility flag from "true" to "false" when not given a state', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+  describe('updateEntryStatus()', () => {
+    it('updates the status flag from "active" to "inactive" when not given a state', () => {
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
-      assert.equal(logDatabaseController.isEntryVisible('000000'), true); // starts as true
+      assert.equal(logDatabaseController.isEntryActive('bbbbbb'), true); // starts as true
 
-      logDatabaseController.toggleEntryVisbility('000000');
+      logDatabaseController.updateEntryStatus('bbbbbb');
 
-      assert.equal(logDatabaseController.isEntryVisible('000000'), false); // now false
+      assert.equal(logDatabaseController.isEntryActive('bbbbbb'), false); // now false
     });
 
-    it('properly updates the visibility flag from "false" to "true" when not given a state', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+    it('updates the status flag from "inactive" to "active" when not given a state', () => {
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
-      assert.equal(logDatabaseController.isEntryVisible('111111'), false); // starts as false
+      assert.equal(logDatabaseController.isEntryActive('cccccc'), false); // starts as false
 
-      logDatabaseController.toggleEntryVisbility('111111');
+      logDatabaseController.updateEntryStatus('cccccc');
 
-      assert.equal(logDatabaseController.isEntryVisible('111111'), true); // now true
+      assert.equal(logDatabaseController.isEntryActive('cccccc'), true); // now true
     });
 
-    it('properly updates the visibility flag to given state regardless of initial value', () => {
-      fs.writeFileSync(logDatabasePath,
-        '0\ttrue\tFri Aug 28 2020\t000000\tdextrial\tCommunity Service\tHardcore\n' +
-        '1\tfalse\tFri Aug 29 2020\t111111\tdextrial\tCommunity Service\tHardcore\n' +
-        '2\tfalse\tFri Aug 30 2020\t222222\tdextrial\tCommunity Service\tHardcore\n'
-      );
+    it('updates the status flag to given state regardless of initial value', () => {
+      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
-      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
+      assert.equal(logDatabaseController.isEntryActive('cccccc'), false);
 
-      logDatabaseController.toggleEntryVisbility('111111', false);
+      logDatabaseController.updateEntryStatus('cccccc', DATABASE_ENTRY_STATUS.INACTIVE);
 
-      assert.equal(logDatabaseController.isEntryVisible('111111'), false);
+      assert.equal(logDatabaseController.isEntryActive('cccccc'), false);
     });
   });
 })

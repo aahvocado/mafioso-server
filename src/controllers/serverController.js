@@ -19,7 +19,7 @@ server.use((req, res, next) => {
 server.get('/all-logs', async (req, res) => {
   res.set('Content-Type', 'text/plain');
   const databaseText = await logDatabaseController.toString();
-  res.send(`id\tvisibility\tentryDate\tlogHash\tcharName\tpathName\tdifficultyName\tdayCount\tturnCount\n\n${databaseText}`);
+  res.send(`id\tstatus\tentryDate\tlogHash\tcharName\tpathName\tdifficultyName\tdayCount\tturnCount\n\n${databaseText}`);
 })
 /**
  * upload a log
@@ -34,9 +34,9 @@ server.post('/api/share', (req, res) => {
 
   // after buffering, save to system
   req.on('end', async () => {
-    const fullText = fileChunks.join('');
     try {
-      await logDatabaseController.addNewLog(fullText);
+      const payloadData = JSON.parse(fileChunks.join(''));
+      await logDatabaseController.addNewLog(payloadData);
       res.status(200).send();
       console.log('...accepted log.');
 

@@ -1,7 +1,8 @@
 import fs from 'fs';
 
 import DatabaseEntry from 'classes/DatabaseEntry';
-import LogData from 'classes/LogData';
+
+import DATABASE_ENTRY_STATUS from 'constants/DATABASE_ENTRY_STATUSES';
 
 import * as regexUtils from 'utilities/regexUtils';
 
@@ -45,10 +46,39 @@ class logDatabaseController {
   // -- file functions
   /**
    * @async
+   * @param {Object} data
+   * @param {Error} - returns error if something went wrong
+   */
+  addNewLog(data) {
+    return new Promise((resolve, reject) => {
+      const newEntry = new DatabaseEntry(data, `${this.entriesCount()}`);
+      if (newEntry.logText === undefined) {
+        return reject('No logText found!');
+      }
+
+      // we'll check is db has the entry (regardless if physical file exists)
+      if (this.hasEntry(newEntry.logHash)) {
+        return reject('Log already exists.');
+      }
+
+      // create new db entry
+      this.addEntry(newEntry);
+
+      // save the file on system, possible overriding existing
+      const filePath = this.getFilePath({fileName: newEntry.fileName});
+      fs.writeFile(filePath, newEntry.logText, (err) => {
+        if (err) reject(err);
+      });
+
+      resolve();
+    })
+  }
+  /**
+   * @async
    * @param {String} text
    * @param {Error} - returns error if something went wrong
    */
-  addNewLog(fullText) {
+  addNewLog_old(fullText) {
     return new Promise((resolve, reject) => {
       const logData = new LogData(fullText);
 
@@ -139,6 +169,8 @@ class logDatabaseController {
     const databaseText = dbBuffer.toString();
     const dataEntryList = databaseText.split('\n').map((dataRow) => new DatabaseEntry(dataRow));
     return dataEntryList.filter((dataEntry) => {
+      if (!dataEntry.isValid) return false;
+
       if (isActive !== undefined) {
         return dataEntry.isActive === isActive;
       }
@@ -200,25 +232,28 @@ class logDatabaseController {
    * @param {String} hash
    * @returns {Boolean}
    */
-  isEntryVisible(hash) {
+  isEntryActive(hash) {
     const foundEntry = this.findEntry(hash);
-    if (foundEntry === undefined) {
-      return false;
-    }
+    if (foundEntry === undefined) return false;
 
     return foundEntry.isActive;
   }
   /**
    * @param {String} hash
-   * @param {Boolean} [toggleTo]
+   * @param {DatabaseEntryStatus} [newStatus]
    * @returns {DatabaseEntry | undefined}
    */
-  toggleEntryVisbility(hash, toggleTo) {
+  updateEntryStatus(hash, newStatus) {
     const entry = this.findEntry(hash);
     if (entry === undefined) return;
 
-    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.isActive;
-    entry.visibility = newVisibility;
+    // if no `newStatus` param was passed, we'll toggle it between active states
+    if (newStatus === undefined) {
+      entry.status = entry.isActive ? DATABASE_ENTRY_STATUS.INACTIVE : DATABASE_ENTRY_STATUS.ACTIVE;
+    } else {
+      entry.status = newStatus;
+    }
+
 
     this.replaceEntry(hash, entry);
   }

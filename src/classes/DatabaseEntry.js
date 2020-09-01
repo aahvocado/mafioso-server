@@ -3,39 +3,65 @@ import DATABASE_ENTRY_STATUS from 'constants/DATABASE_ENTRY_STATUSES';
 export default class DatabaseEntry {
   /**
    * @param {Object|String} logData
-   * @param {Number} entryId
+   * @param {String} entryId
    */
   constructor(logData, entryId) {
-    if (logData === undefined) {
-      return;
-    }
-
-    // if param is a string, can import from databaseRow
-    if (typeof logData === 'string') {
-      this.import(logData);
-      return;
-    }
-
-    const createDate = new Date();
-
     /** @type {String} */
     this.entryId = entryId;
-    /** @type {String} */
-    this.status = DATABASE_ENTRY_STATUS.ACTIVE;
-    /** @type {String} */
-    this.entryDate = createDate.toDateString();
-    /** @type {String} */
-    this.logHash = logData.logHash;
-    /** @type {String} */
-    this.charName = logData.charName;
-    /** @type {String} */
-    this.pathName = logData.pathName;
-    /** @type {String} */
-    this.difficultyName = logData.difficultyName;
-    /** @type {String} */
-    this.dayCount = logData.dayCount;
-    /** @type {String} */
-    this.turnCount = logData.turnCount;
+    /** @type {DatabaseEntryStatus} */
+    this.status = logData.status || DATABASE_ENTRY_STATUS.INACTIVE;
+    /** {Object} logData */
+    this.logData = {};
+
+    // if param is a string, need to format it
+    if (typeof logData === 'string') {
+      this.import(logData);
+
+    } else {
+      this.logData = logData;
+    }
+
+    // if no date string was given, give it one now
+    if (logData.entryDate === undefined) {
+      this.logData.entryDate = (new Date()).toDateString();
+    }
+  }
+  /** @type {String} */
+  get entryDate() {
+    return this.logData.entryDate;
+  }
+  /** @type {String} */
+  get characterName() {
+    return this.logData.characterName;
+  }
+  /** @type {String} */
+  get difficultyName() {
+    return this.logData.difficultyName;
+  }
+  /** @type {String} */
+  get pathName() {
+    return this.logData.pathName;
+  }
+  /** @type {String} */
+  get dayCount() {
+    return this.logData.dayCount;
+  }
+  /** @type {String} */
+  get turnCount() {
+    return this.logData.turnCount;
+  }
+  /** @type {String} */
+  get logHash() {
+    return this.logData.logHash;
+  }
+  /** @type {String} */
+  get logText() {
+    return this.logData.logText;
+  }
+  // --
+  /** @type {String} */
+  get isValid() {
+    return this.entryId !== 'undefined' && this.entryId !== undefined && this.entryId !== '';
   }
   /** @type {String} */
   get isActive() {
@@ -49,40 +75,54 @@ export default class DatabaseEntry {
   get fileName() {
     return `${this.logHash}.txt`;
   }
+  // --
+  /**
+   * @param {Boolean} toActive
+   */
+  updateStatus(toActive) {
+    if (toActive) {
+      this.status = DATABASE_ENTRY_STATUS.ACTIVE;
+    } else {
+      this.status = DATABASE_ENTRY_STATUS.INACTIVE;
+    }
+  }
+  // --
+  /**
+   * @returns {String}
+   */
+  toString() {
+    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.logHash}\t${this.characterName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
+  }
   /**
    * @param {String} databaseRow
+   * @param {String} [logText]
    */
-  import(databaseRow) {
+  import(databaseRow, logText) {
     const cleanRow = databaseRow.replace('\n', '');
     const entryPieces = cleanRow.split('\t');
 
     this.entryId = entryPieces[0];
     this.status = entryPieces[1];
-    this.entryDate = entryPieces[2];
-    this.logHash = entryPieces[3];
-    this.charName = entryPieces[4];
-    this.pathName = entryPieces[5];
-    this.difficultyName = entryPieces[6];
-    this.dayCount = entryPieces[7];
-    this.turnCount = entryPieces[8];
+
+    this.logData = {
+      entryDate: entryPieces[2],
+      logHash: entryPieces[3],
+      characterName: entryPieces[4],
+      pathName: entryPieces[5],
+      difficultyName: entryPieces[6],
+      dayCount: entryPieces[7],
+      turnCount: entryPieces[8],
+      logText: logText,
+    }
   }
   /**
    * @returns {Object}
    */
   export() {
     return {
-      logHash: this.logHash,
-      charName: this.charName,
-      pathName: this.pathName,
-      difficultyName: this.difficultyName,
-      dayCount: this.dayCount,
-      turnCount: this.turnCount,
+      ...this.logData,
+      entryId: this.entryId,
+      status: this.status,
     }
-  }
-  /**
-   * @returns {String}
-   */
-  toString() {
-    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
   }
 }

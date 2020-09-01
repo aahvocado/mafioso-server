@@ -163,7 +163,10 @@ class logDatabaseController {
    * @returns {Array<DatabaseEntry>}
    */
   getDatabase(config = {}) {
-    const {isActive} = config;
+    const {
+      isActive,
+      status = DATABASE_ENTRY_STATUS.ACTIVE,
+    } = config;
 
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
@@ -173,6 +176,11 @@ class logDatabaseController {
 
       if (isActive !== undefined) {
         return dataEntry.isActive === isActive;
+      }
+
+      // any means all
+      if (status === DATABASE_ENTRY_STATUS.ANY) {
+        return true;
       }
 
       return true;

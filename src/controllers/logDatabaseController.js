@@ -74,33 +74,6 @@ class logDatabaseController {
     })
   }
   /**
-   * @async
-   * @param {String} text
-   * @param {Error} - returns error if something went wrong
-   */
-  addNewLog_old(fullText) {
-    return new Promise((resolve, reject) => {
-      const logData = new LogData(fullText);
-
-      // we'll check is db has the entry (regardless if physical file exists)
-      if (this.hasEntry(logData.logHash)) {
-        return reject('Log already exists.');
-      }
-
-      // save the file on system, possible overriding existing
-      const filePath = this.getFilePath({fileName: logData.fileName});
-      fs.writeFile(filePath, fullText, (err) => {
-        if (err) reject(err);
-      });
-
-      // create new db entry
-      const newEntry = new DatabaseEntry(logData, this.entriesCount());
-      this.addEntry(newEntry);
-
-      resolve();
-    })
-  }
-  /**
    * @param {Object} param
    * @returns {String}
    */

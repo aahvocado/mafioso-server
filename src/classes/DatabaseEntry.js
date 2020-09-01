@@ -1,3 +1,5 @@
+import DATABASE_ENTRY_STATUS from 'constants/DATABASE_ENTRY_STATUSES';
+
 export default class DatabaseEntry {
   /**
    * @param {Object|String} logData
@@ -19,7 +21,7 @@ export default class DatabaseEntry {
     /** @type {String} */
     this.entryId = entryId;
     /** @type {String} */
-    this.visibility = 'true';
+    this.status = DATABASE_ENTRY_STATUS.ACTIVE;
     /** @type {String} */
     this.entryDate = createDate.toDateString();
     /** @type {String} */
@@ -36,8 +38,8 @@ export default class DatabaseEntry {
     this.turnCount = logData.turnCount;
   }
   /** @type {String} */
-  get isVisible() {
-    return this.visibility === 'true';
+  get isActive() {
+    return this.status === DATABASE_ENTRY_STATUS.ACTIVE;
   }
   /** @type {Date} */
   get date() {
@@ -55,7 +57,7 @@ export default class DatabaseEntry {
     const entryPieces = cleanRow.split('\t');
 
     this.entryId = entryPieces[0];
-    this.visibility = entryPieces[1];
+    this.status = entryPieces[1];
     this.entryDate = entryPieces[2];
     this.logHash = entryPieces[3];
     this.charName = entryPieces[4];
@@ -81,6 +83,6 @@ export default class DatabaseEntry {
    * @returns {String}
    */
   toString() {
-    return `${this.entryId}\t${this.visibility}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
+    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.logHash}\t${this.charName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
   }
 }

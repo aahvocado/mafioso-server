@@ -52,7 +52,7 @@ server.post('/api/share', (req, res) => {
 server.get('/api/active-logs', (req, res) => {
   console.log('Received shared logs request...');
 
-  const databaseList = logDatabaseController.getDatabase({isVisible: true});
+  const databaseList = logDatabaseController.getDatabase({isActive: true});
   const databaseJSON = JSON.stringify(databaseList.map((databaseEntry) => databaseEntry.export()));
   res.send(databaseJSON);
 })

@@ -133,14 +133,14 @@ class logDatabaseController {
    * @returns {Array<DatabaseEntry>}
    */
   getDatabase(config = {}) {
-    const {isVisible} = config;
+    const {isActive} = config;
 
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
     const dataEntryList = databaseText.split('\n').map((dataRow) => new DatabaseEntry(dataRow));
     return dataEntryList.filter((dataEntry) => {
-      if (isVisible !== undefined) {
-        return dataEntry.isVisible === isVisible;
+      if (isActive !== undefined) {
+        return dataEntry.isActive === isActive;
       }
 
       return true;
@@ -206,7 +206,7 @@ class logDatabaseController {
       return false;
     }
 
-    return foundEntry.isVisible;
+    return foundEntry.isActive;
   }
   /**
    * @param {String} hash
@@ -217,7 +217,7 @@ class logDatabaseController {
     const entry = this.findEntry(hash);
     if (entry === undefined) return;
 
-    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.isVisible;
+    const newVisibility = toggleTo !== undefined ? toggleTo : !entry.isActive;
     entry.visibility = newVisibility;
 
     this.replaceEntry(hash, entry);

@@ -39,7 +39,8 @@ class logDatabaseController {
   toString() {
     const dbBuffer = fs.readFileSync(this.databasePath);
     const databaseText = dbBuffer.toString();
-    return Buffer.from(databaseText, 'utf8');
+    return databaseText;
+    // return await Buffer.from(databaseText, 'utf8');
   }
   // -- file functions
   /**
@@ -102,6 +103,10 @@ class logDatabaseController {
    */
   findLog(logData) {
     const logFilePath = this.getFilePath({fileName: logData.fileName});
+    if (logFilePath === undefined) {
+      console.error(`Unable to find filepath for "${logData.fileName}"`);
+      return;
+    }
     const dbBuffer = fs.readFileSync(logFilePath);
     return dbBuffer.toString();
   }

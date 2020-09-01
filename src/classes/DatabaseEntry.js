@@ -39,9 +39,13 @@ export default class DatabaseEntry {
   get isVisible() {
     return this.visibility === 'true';
   }
-  /** @type {String} */
+  /** @type {Date} */
   get date() {
     return new Date(this.entryDate);
+  }
+  /** @type {String} */
+  get fileName() {
+    return `${this.logHash}.txt`;
   }
   /**
    * @param {String} databaseRow

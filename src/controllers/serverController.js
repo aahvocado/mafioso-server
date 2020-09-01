@@ -25,7 +25,7 @@ server.get('/all-logs', async (req, res) => {
  * upload a log
  */
 server.post('/api/share', (req, res) => {
-  console.log('Received upload request...');
+  console.log('Received log for sharing...');
   const fileChunks = [];
 
   req.on('data', (buffer) => {
@@ -33,9 +33,17 @@ server.post('/api/share', (req, res) => {
   });
 
   // after buffering, save to system
-  req.on('end', () => {
+  req.on('end', async () => {
     const fullText = fileChunks.join('');
-    logDatabaseController.addNewLog(fullText);
+    try {
+      await logDatabaseController.addNewLog(fullText);
+      res.status(200).send();
+      console.log('...accepted log.');
+
+    } catch (err) {
+      res.status(409).send(err);
+      console.error('...rejected log.', err);
+    }
   });
 })
 /**

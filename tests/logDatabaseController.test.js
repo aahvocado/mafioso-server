@@ -10,6 +10,8 @@ import logDatabaseController from 'controllers/logDatabaseController';
 const DB_PATH = process.env['DB_PATH'];
 
 describe('logDatabaseController.js', () => {
+  const originalDatabase = fs.readFileSync(DB_PATH);
+
   let genericEntry;
 
   beforeEach(() => {
@@ -145,4 +147,9 @@ describe('logDatabaseController.js', () => {
       assert.equal(logDatabaseController.isEntryActive('cccccc'), false);
     });
   });
+
+  // clear data after tests
+  after(() => {
+    fs.writeFileSync(DB_PATH, originalDatabase);
+  })
 })

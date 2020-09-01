@@ -47,23 +47,29 @@ server.post('/api/share', (req, res) => {
   });
 })
 /**
- * get all visible logs
+ * get list of logs
  */
-server.get('/api/active-logs', (req, res) => {
+server.get('/api/logs', (req, res) => {
   console.log('Received shared logs request...');
 
-  const databaseList = logDatabaseController.getDatabase({isActive: true});
+  const {status} = req.query;
+  const databaseList = logDatabaseController.getDatabase({status});
   const databaseJSON = JSON.stringify(databaseList.map((databaseEntry) => databaseEntry.export()));
-  res.send(databaseJSON);
+
+  res.status(200).send(databaseJSON);
+
+  console.log('...found and sent!');
 })
 /**
  * get an single log
  */
 server.get('/api/log/:logHash', (req, res) => {
   console.log('Received shared logs request...');
+
   const logText = logDatabaseController.getLogByHash(req.params.logHash);
-  res.send(logText);
-  console.log('... found and sent!');
+  res.status(200).send(logText);
+
+  console.log('...found and sent!');
 })
 
 export default server;

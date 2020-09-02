@@ -80,23 +80,20 @@ class logDatabaseController {
   getFilePath(param) {
     const {
       fileName,
-      hashcode,
     } = param;
 
     if (fileName !== undefined) {
       return `${SAVE_PATH}/${fileName}`;
     }
 
-    if (hashcode !== undefined) {
-      return `${SAVE_PATH}/${hashcode}.txt`;
-    }
+    return `${SAVE_PATH}`;
   }
   /**
-   * @param {LogData} logData
+   * @param {DatabaseEntry} databaseEntry
    * @returns {Boolean}
    */
-  hasLog(logData) {
-    const logFilePath = this.getFilePath({fileName: logData.fileName});
+  hasLog(databaseEntry) {
+    const logFilePath = this.getFilePath({fileName: databaseEntry.fileName});
     try {
       fs.accessSync(logFilePath, fs.constants.R_OK);
       return true;
@@ -106,13 +103,13 @@ class logDatabaseController {
     }
   }
   /**
-   * @param {LogData} logData
+   * @param {DatabaseEntry} databaseEntry
    * @returns {String}
    */
-  findLog(logData) {
-    const logFilePath = this.getFilePath({fileName: logData.fileName});
+  findLog(databaseEntry) {
+    const logFilePath = this.getFilePath({fileName: databaseEntry.fileName});
     if (logFilePath === undefined) {
-      console.error(`Unable to find filepath for "${logData.fileName}"`);
+      console.error(`Unable to find filepath for "${databaseEntry.fileName}"`);
       return;
     }
     const dbBuffer = fs.readFileSync(logFilePath);
@@ -123,12 +120,12 @@ class logDatabaseController {
    * @returns {String}
    */
   getLogByHash(hashcode) {
-    const logData = this.findEntry(hashcode);
-    if (logData === undefined) {
+    const databaseEntry = this.findEntry(hashcode);
+    if (databaseEntry === undefined) {
       console.error(`Unable to find log entry for "${hashcode}"`);
       return;
     }
-    return this.findLog(logData);
+    return this.findLog(databaseEntry);
   }
   // -- database functions
   /**

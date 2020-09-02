@@ -1,3 +1,5 @@
+import {decode} from 'base-64';
+
 import DATABASE_ENTRY_STATUS from 'constants/DATABASE_ENTRY_STATUSES';
 
 export default class DatabaseEntry {
@@ -73,7 +75,7 @@ export default class DatabaseEntry {
   }
   /** @type {String} */
   get fileName() {
-    return `${this.hashcode}.txt`;
+    return `${decode(this.hashcode)}`;
   }
   // --
   /**

@@ -145,14 +145,14 @@ class logDatabaseController {
       .map((dataRow) => new DatabaseEntry(dataRow))
       .filter((dataEntry) => dataEntry.isValid);
 
-    // return everything if status is any
+    // return everything that is not disabled if ANY
     if (status === DATABASE_ENTRY_STATUS.ANY || status === undefined) {
-      return dataEntryList;
+      return dataEntryList.filter((dataEntry) => dataEntry.status !== DATABASE_ENTRY_STATUS.DISABLED);
     }
 
     const optionKeys = Object.keys(options);
     return dataEntryList.filter((dataEntry) => {
-      return !optionKeys.some((optionName) => databaseEntry[optionName] !== options[optionName]);
+      return !optionKeys.some((optionName) => dataEntry[optionName] !== options[optionName]);
     });
   }
   /**

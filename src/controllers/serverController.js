@@ -59,7 +59,7 @@ server.get('/api/logs', (req, res) => {
 
   res.status(200).send(databaseJSON);
 
-  console.log('...found and sent!');
+  console.log('...sending list!');
 })
 /**
  * get an single log

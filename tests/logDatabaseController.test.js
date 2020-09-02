@@ -16,7 +16,7 @@ describe('logDatabaseController.js', () => {
 
   beforeEach(() => {
     genericEntry = new DatabaseEntry({
-      logHash: 'aaaaaa',
+      hashcode: 'aaaaaa',
       characterName: 'unit-test',
       pathName: 'Community Service',
       difficultyName: 'Hardcore',
@@ -37,10 +37,10 @@ describe('logDatabaseController.js', () => {
     it('properly adds multiple DatabaseEntry into an existing database', async () => {
       fs.writeFileSync(DB_PATH, genericEntry.toString());
 
-      const entryA = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
+      const entryA = new DatabaseEntry({hashcode: 'bbbbbb'}, '111');
       await logDatabaseController.addEntry(entryA);
 
-      const entryB = new DatabaseEntry({logHash: 'cccccc'}, '222');
+      const entryB = new DatabaseEntry({hashcode: 'cccccc'}, '222');
       await logDatabaseController.addEntry(entryB);
 
       assert.equal(logDatabaseController.entriesCount(), 3);
@@ -55,7 +55,7 @@ describe('logDatabaseController.js', () => {
       assert.equal(foundEntry, undefined);
     });
 
-    it('returns DatabaseEntry based on given hash', async () => {
+    it('returns DatabaseEntry based on given hashcode', async () => {
       fs.writeFileSync(DB_PATH, genericEntry.toString());
 
       const foundEntry = logDatabaseController.findEntry('aaaaaa');
@@ -64,7 +64,7 @@ describe('logDatabaseController.js', () => {
   })
 
   describe('hasEntry()', () => {
-    it('returns false if unable to find hash', () => {
+    it('returns false if unable to find hashcode', () => {
       fs.writeFileSync(DB_PATH, genericEntry.toString());
 
       const doesItHave = logDatabaseController.hasEntry('abcdef');
@@ -72,9 +72,9 @@ describe('logDatabaseController.js', () => {
     });
 
     it('returns true if found DatabaseEntry', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc'}, '222');
-      const entryD = new DatabaseEntry({logHash: 'dddddd'}, '333');
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb'}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc'}, '222');
+      const entryD = new DatabaseEntry({hashcode: 'dddddd'}, '333');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString() + entryD.toString());
 
       const doesItHave = logDatabaseController.hasEntry('bbbbbb');
@@ -83,15 +83,15 @@ describe('logDatabaseController.js', () => {
   });
 
   describe('replaceEntry()', () => {
-    it('properly replaces entry of given hash with the new entry', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb'}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc'}, '222');
-      const entryD = new DatabaseEntry({logHash: 'dddddd'}, '333');
+    it('properly replaces entry of given hashcode with the new entry', () => {
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb'}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc'}, '222');
+      const entryD = new DatabaseEntry({hashcode: 'dddddd'}, '333');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString() + entryD.toString());
 
       assert.equal(logDatabaseController.hasEntry('abcdef'), false); // should not exist
 
-      const newEntry = new DatabaseEntry({logHash: 'abcdef'}, '444');
+      const newEntry = new DatabaseEntry({hashcode: 'abcdef'}, '444');
       logDatabaseController.replaceEntry('bbbbbb', newEntry);
 
       assert.equal(logDatabaseController.hasEntry('abcdef'), true); // newly replaced
@@ -101,8 +101,8 @@ describe('logDatabaseController.js', () => {
 
   describe('isEntryActive()', () => {
     it('returns a boolean value of the active state of Database Entry', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
       assert.equal(logDatabaseController.isEntryActive('bbbbbb'), true);
@@ -112,8 +112,8 @@ describe('logDatabaseController.js', () => {
 
   describe('updateEntryStatus()', () => {
     it('updates the status flag from "active" to "inactive" when not given a state', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
       assert.equal(logDatabaseController.isEntryActive('bbbbbb'), true); // starts as true
@@ -124,8 +124,8 @@ describe('logDatabaseController.js', () => {
     });
 
     it('updates the status flag from "inactive" to "active" when not given a state', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
       assert.equal(logDatabaseController.isEntryActive('cccccc'), false); // starts as false
@@ -136,8 +136,8 @@ describe('logDatabaseController.js', () => {
     });
 
     it('updates the status flag to given state regardless of initial value', () => {
-      const entryB = new DatabaseEntry({logHash: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
-      const entryC = new DatabaseEntry({logHash: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
+      const entryB = new DatabaseEntry({hashcode: 'bbbbbb', status: DATABASE_ENTRY_STATUS.ACTIVE}, '111');
+      const entryC = new DatabaseEntry({hashcode: 'cccccc', status: DATABASE_ENTRY_STATUS.INACTIVE}, '222');
       fs.writeFileSync(DB_PATH, entryB.toString() + entryC.toString());
 
       assert.equal(logDatabaseController.isEntryActive('cccccc'), false);

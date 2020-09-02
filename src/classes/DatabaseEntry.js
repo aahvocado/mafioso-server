@@ -51,8 +51,8 @@ export default class DatabaseEntry {
     return this.logData.turnCount;
   }
   /** @type {String} */
-  get logHash() {
-    return String(this.logData.logHash);
+  get hashcode() {
+    return String(this.logData.hashcode);
   }
   /** @type {String} */
   get logText() {
@@ -73,7 +73,7 @@ export default class DatabaseEntry {
   }
   /** @type {String} */
   get fileName() {
-    return `${this.logHash}.txt`;
+    return `${this.hashcode}.txt`;
   }
   // --
   /**
@@ -91,7 +91,7 @@ export default class DatabaseEntry {
    * @returns {String}
    */
   toString() {
-    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.logHash}\t${this.characterName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
+    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.hashcode}\t${this.characterName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
   }
   /**
    * @param {String} databaseRow
@@ -106,7 +106,7 @@ export default class DatabaseEntry {
 
     this.logData = {
       entryDate: entryPieces[2],
-      logHash: entryPieces[3],
+      hashcode: entryPieces[3],
       characterName: entryPieces[4],
       pathName: entryPieces[5],
       difficultyName: entryPieces[6],

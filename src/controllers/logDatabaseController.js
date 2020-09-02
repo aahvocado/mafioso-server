@@ -57,7 +57,7 @@ class logDatabaseController {
       }
 
       // we'll check is db has the entry (regardless if physical file exists)
-      if (this.hasEntry(newEntry.logHash)) {
+      if (this.hasEntry(newEntry.hashcode)) {
         return reject('Log already exists.');
       }
 
@@ -80,15 +80,15 @@ class logDatabaseController {
   getFilePath(param) {
     const {
       fileName,
-      hash,
+      hashcode,
     } = param;
 
     if (fileName !== undefined) {
       return `${SAVE_PATH}/${fileName}`;
     }
 
-    if (hash !== undefined) {
-      return `${SAVE_PATH}/${hash}.txt`;
+    if (hashcode !== undefined) {
+      return `${SAVE_PATH}/${hashcode}.txt`;
     }
   }
   /**
@@ -119,13 +119,13 @@ class logDatabaseController {
     return dbBuffer.toString();
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @returns {String}
    */
-  getLogByHash(hash) {
-    const logData = this.findEntry(hash);
+  getLogByHash(hashcode) {
+    const logData = this.findEntry(hashcode);
     if (logData === undefined) {
-      console.error(`Unable to find log entry for "${hash}"`);
+      console.error(`Unable to find log entry for "${hashcode}"`);
       return;
     }
     return this.findLog(logData);
@@ -165,19 +165,19 @@ class logDatabaseController {
     return this.getDatabase().length;
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @returns {Boolean}
    */
-  hasEntry(hash) {
-    return this.findEntry(hash) !== undefined;
+  hasEntry(hashcode) {
+    return this.findEntry(hashcode) !== undefined;
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @returns {DatabaseEntry | undefined}
    */
-  findEntry(hash) {
+  findEntry(hashcode) {
     const database = this.getDatabase({status: DATABASE_ENTRY_STATUS.ANY});
-    return database.find((databaseEntry) => databaseEntry.logHash === hash);
+    return database.find((databaseEntry) => databaseEntry.hashcode === hashcode);
   }
   /**
    * @async
@@ -193,13 +193,13 @@ class logDatabaseController {
     })
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @param {DatabaseEntry} newEntry
    */
-  replaceEntry(hash, newEntry) {
+  replaceEntry(hashcode, newEntry) {
     const databaseText = this.toString().slice();
 
-    const oldEntry = this.findEntry(hash);
+    const oldEntry = this.findEntry(hashcode);
     const oldText = oldEntry.toString();
     const newText = newEntry.toString();
 
@@ -209,22 +209,22 @@ class logDatabaseController {
     fs.writeFileSync(this.databasePath, newDatabaseText);
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @returns {Boolean}
    */
-  isEntryActive(hash) {
-    const foundEntry = this.findEntry(hash);
+  isEntryActive(hashcode) {
+    const foundEntry = this.findEntry(hashcode);
     if (foundEntry === undefined) return false;
 
     return foundEntry.isActive;
   }
   /**
-   * @param {String} hash
+   * @param {String} hashcode
    * @param {DatabaseEntryStatus} [newStatus]
    * @returns {DatabaseEntry | undefined}
    */
-  updateEntryStatus(hash, newStatus) {
-    const entry = this.findEntry(hash);
+  updateEntryStatus(hashcode, newStatus) {
+    const entry = this.findEntry(hashcode);
     if (entry === undefined) return;
 
     // if no `newStatus` param was passed, we'll toggle it between active states
@@ -235,7 +235,7 @@ class logDatabaseController {
     }
 
 
-    this.replaceEntry(hash, entry);
+    this.replaceEntry(hashcode, entry);
   }
 }
 

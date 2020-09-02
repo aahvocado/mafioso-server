@@ -20,7 +20,7 @@ server.use((req, res, next) => {
 server.get('/all-logs', async (req, res) => {
   res.set('Content-Type', 'text/plain');
   const databaseText = await logDatabaseController.toString();
-  res.send(`id\tstatus\tentryDate\tlogHash\tcharName\tpathName\tdifficultyName\tdayCount\tturnCount\n\n${databaseText}`);
+  res.send(`id\tstatus\tentryDate\thashcode\tcharName\tpathName\tdifficultyName\tdayCount\tturnCount\n\n${databaseText}`);
 })
 /**
  * upload a log
@@ -64,10 +64,10 @@ server.get('/api/logs', (req, res) => {
 /**
  * get an single log
  */
-server.get('/api/log/:logHash', (req, res) => {
+server.get('/api/log/:hashcode', (req, res) => {
   console.log('Received shared logs request...');
 
-  const logText = logDatabaseController.getLogByHash(req.params.logHash);
+  const logText = logDatabaseController.getLogByHash(req.params.hashcode);
   res.status(200).send(logText);
 
   console.log('...found and sent!');
@@ -75,7 +75,7 @@ server.get('/api/log/:logHash', (req, res) => {
 /**
  * modify a log
  */
-server.post('/api/update/:logHash', (req, res) => {
+server.post('/api/update/:hashcode', (req, res) => {
   console.log('Updating database entry...');
 
   try {
@@ -86,7 +86,7 @@ server.post('/api/update/:logHash', (req, res) => {
       return;
     }
 
-    logDatabaseController.updateEntryStatus(req.params.logHash, status);
+    logDatabaseController.updateEntryStatus(req.params.hashcode, status);
     res.status(200).send();
     console.error('...success.');
 

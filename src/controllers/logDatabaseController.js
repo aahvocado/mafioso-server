@@ -174,7 +174,8 @@ class logDatabaseController {
    */
   findEntry(hashcode) {
     const database = this.getDatabase({status: DATABASE_ENTRY_STATUS.ANY});
-    return database.find((databaseEntry) => databaseEntry.hashcode === hashcode);
+    const foundEntry = database.find((databaseEntry) => databaseEntry.hashcode === hashcode);
+    return foundEntry;
   }
   /**
    * @async
@@ -230,7 +231,6 @@ class logDatabaseController {
     } else {
       entry.status = newStatus;
     }
-
 
     this.replaceEntry(hashcode, entry);
   }

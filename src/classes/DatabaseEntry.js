@@ -15,17 +15,17 @@ export default class DatabaseEntry {
     /** {Object} logData */
     this.logData = {};
 
+    // if no date string was given, give it one now
+    if (logData.entryDate === undefined) {
+      this.logData.entryDate = (new Date()).toDateString();
+    }
+
     // if param is a string, need to format it
     if (typeof logData === 'string') {
       this.import(logData);
 
     } else {
       this.logData = logData;
-    }
-
-    // if no date string was given, give it one now
-    if (logData.entryDate === undefined) {
-      this.logData.entryDate = (new Date()).toDateString();
     }
   }
   /** @type {String} */

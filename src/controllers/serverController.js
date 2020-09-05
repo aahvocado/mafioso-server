@@ -67,8 +67,11 @@ server.get('/api/logs', (req, res) => {
 server.get('/api/log/:hashcode', (req, res) => {
   console.log('Received shared logs request...');
 
-  const logText = logDatabaseController.getLogByHash(req.params.hashcode);
-  res.status(200).send(logText);
+  const databaseEntry = logDatabaseController.findEntry(req.params.hashcode);
+  const logText = logDatabaseController.findLog(databaseEntry);
+
+  const response = {databaseEntry: databaseEntry.export(), logText};
+  res.status(200).send(JSON.stringify(response));
 
   console.log('...found and sent!');
 })

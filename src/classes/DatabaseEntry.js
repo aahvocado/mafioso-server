@@ -11,7 +11,7 @@ export default class DatabaseEntry {
     /** @type {String} */
     this.entryId = entryId;
     /** @type {DatabaseEntryStatus} */
-    this.status = logData.status || DATABASE_ENTRY_STATUS.INACTIVE;
+    this.status = logData.status || DATABASE_ENTRY_STATUS.ACTIVE;
     /** {Object} logData */
     this.logData = {};
 

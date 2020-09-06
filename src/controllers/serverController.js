@@ -16,9 +16,9 @@ server.use((req, res, next) => {
   next();
 });
 /**
- * show all logs
+ * status
  */
- server.get(`${SERVER_PATH}/status`, async (req, res) => {
+server.get(`${SERVER_PATH}/status`, async (req, res) => {
   res.send('we good');
 })
 /**

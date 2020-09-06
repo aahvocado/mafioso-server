@@ -4,6 +4,9 @@ build
 *compiled
 
 .env*
+*.key
+*.cert
+*.pem
 
 .DS_Store
 npm-debug.log*

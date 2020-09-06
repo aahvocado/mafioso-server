@@ -2,6 +2,7 @@ import express from 'express';
 
 import logDatabaseController from 'controllers/logDatabaseController';
 
+const SERVER_PATH = process.env['SERVER_PATH'];
 const ACCEPTED_ORIGINS = process.env['ACCEPTED_ORIGINS'];
 const ACCEPTED_ROLES = process.env['ACCEPTED_ROLES'];
 
@@ -17,13 +18,13 @@ server.use((req, res, next) => {
 /**
  * show all logs
  */
- server.get('/status', async (req, res) => {
+ server.get(`${SERVER_PATH}/status`, async (req, res) => {
   res.send('we good');
 })
 /**
  * show all logs
  */
-server.get('/all-logs', async (req, res) => {
+server.get(`${SERVER_PATH}/all-logs`, async (req, res) => {
   res.set('Content-Type', 'text/plain');
   const databaseText = await logDatabaseController.toString();
   res.send(`id\tstatus\tentryDate\thashcode\tcharName\tpathName\tdifficultyName\tdayCount\tturnCount\n\n${databaseText}`);
@@ -31,7 +32,7 @@ server.get('/all-logs', async (req, res) => {
 /**
  * upload a log
  */
-server.post('/api/share', (req, res) => {
+server.post(`${SERVER_PATH}/api/share`, (req, res) => {
   console.log('Received log for sharing...');
   const fileChunks = [];
 
@@ -56,7 +57,7 @@ server.post('/api/share', (req, res) => {
 /**
  * get list of logs
  */
-server.get('/api/logs', (req, res) => {
+server.get(`${SERVER_PATH}/api/logs`, (req, res) => {
   console.log('Received shared logs request...');
 
   const {status} = req.query;
@@ -70,7 +71,7 @@ server.get('/api/logs', (req, res) => {
 /**
  * get an single log
  */
-server.get('/api/log/:hashcode', (req, res) => {
+server.get(`${SERVER_PATH}/api/log/:hashcode`, (req, res) => {
   console.log('Received shared logs request...');
 
   const databaseEntry = logDatabaseController.findEntry(req.params.hashcode);
@@ -84,7 +85,7 @@ server.get('/api/log/:hashcode', (req, res) => {
 /**
  * modify a log
  */
-server.post('/api/update/:hashcode', (req, res) => {
+server.post(`${SERVER_PATH}/api/update/:hashcode`, (req, res) => {
   console.log('Updating database entry...');
 
   try {

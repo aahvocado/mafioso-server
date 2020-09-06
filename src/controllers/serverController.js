@@ -17,6 +17,12 @@ server.use((req, res, next) => {
 /**
  * show all logs
  */
+ server.get('/status', async (req, res) => {
+  res.send('we good');
+})
+/**
+ * show all logs
+ */
 server.get('/all-logs', async (req, res) => {
   res.set('Content-Type', 'text/plain');
   const databaseText = await logDatabaseController.toString();

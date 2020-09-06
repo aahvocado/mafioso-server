@@ -75,7 +75,20 @@ server.get(`${SERVER_PATH}/api/log/:hashcode`, (req, res) => {
   console.log('Received shared logs request...');
 
   const databaseEntry = logDatabaseController.findEntry(req.params.hashcode);
+  if (databaseEntry == undefined) {
+    const error = 'Entry does not exist.';
+    res.status(400).send(error);
+    console.warn(error);
+    return;
+  }
+
   const logText = logDatabaseController.findLog(databaseEntry);
+  if (databaseEntry == undefined) {
+    const error = 'Could not find log for that entry.';
+    res.status(400).send(error);
+    console.warn(error);
+    return;
+  }
 
   const response = {databaseEntry: databaseEntry.export(), logText};
   res.status(200).send(JSON.stringify(response));

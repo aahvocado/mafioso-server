@@ -12,7 +12,7 @@ const HOST = process.env['HOST'];
 const PORT = process.env['PORT'];
 
 // local
-if (ENVIRONMENT === 'local') {
+if (ENVIRONMENT === 'local' || CERT_PATH === '' || CERT_KEY_PATH === '') {
   serverController.listen(PORT, HOST, () => {
     console.log(`Server listening on http://${HOST}:${PORT}${SERVER_PATH}`);
   });

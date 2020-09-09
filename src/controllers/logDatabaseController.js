@@ -135,7 +135,7 @@ class logDatabaseController {
   getDatabase(options = {}) {
     const {
       isActive,
-      status = DATABASE_ENTRY_STATUS.ANY,
+      status = DATABASE_ENTRY_STATUS.MOST,
     } = options;
 
     const dbBuffer = fs.readFileSync(this.databasePath);
@@ -145,8 +145,13 @@ class logDatabaseController {
       .map((dataRow) => new DatabaseEntry(dataRow))
       .filter((dataEntry) => dataEntry.isValid);
 
-    // return everything that is not disabled if ANY
+    // return everything for ANY
     if (status === DATABASE_ENTRY_STATUS.ANY || status === undefined) {
+      return dataEntryList;
+    }
+
+    // return not disabled if MOST
+    if (status === DATABASE_ENTRY_STATUS.MOST || status === undefined) {
       return dataEntryList.filter((dataEntry) => dataEntry.status !== DATABASE_ENTRY_STATUS.DISABLED);
     }
 
@@ -159,7 +164,7 @@ class logDatabaseController {
    * @returns {Number}
    */
   entriesCount() {
-    return this.getDatabase().length;
+    return this.getDatabase({status: DATABASE_ENTRY_STATUS.ANY}).length;
   }
   /**
    * @param {String} hashcode

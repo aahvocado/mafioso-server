@@ -47,11 +47,21 @@ export default class DatabaseEntry {
   }
   /** @type {String} */
   get dayCount() {
-    return this.logData.dayCount;
+    const {dayCount} = this.logData;
+    if (dayCount === undefined || dayCount === '0') {
+      return '?';
+    }
+
+    return dayCount;
   }
   /** @type {String} */
   get turnCount() {
-    return this.logData.turnCount;
+    const {turnCount} = this.logData;
+    if (turnCount === undefined || turnCount === '0') {
+      return '?';
+    }
+
+    return turnCount;
   }
   /** @type {String} */
   get hashcode() {
@@ -124,7 +134,7 @@ export default class DatabaseEntry {
   export() {
     return {
       ...this.logData,
-      entryId: this.entryId,
+      // entryId: this.entryId,
       status: this.status,
     }
   }

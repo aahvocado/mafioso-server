@@ -136,6 +136,8 @@ export default class DatabaseEntry {
       ...this.logData,
       // entryId: this.entryId,
       status: this.status,
+      dayCount: this.dayCount !== '?' ? Number(this.dayCount) : this.dayCount,
+      turnCount: this.turnCount !== '?' ? Number(this.turnCount) : this.turnCount,
     }
   }
 }

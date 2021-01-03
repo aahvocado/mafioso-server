@@ -68,6 +68,10 @@ export default class DatabaseEntry {
     return String(this.logData.hashcode);
   }
   /** @type {String} */
+  get standardSeason() {
+    return this.logData.standardSeason;
+  }
+  /** @type {String} */
   get logText() {
     return this.logData.logText;
   }
@@ -104,7 +108,7 @@ export default class DatabaseEntry {
    * @returns {String}
    */
   toString() {
-    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.hashcode}\t${this.characterName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\n`;
+    return `${this.entryId}\t${this.status}\t${this.entryDate}\t${this.hashcode}\t${this.characterName}\t${this.pathName}\t${this.difficultyName}\t${this.dayCount}\t${this.turnCount}\t${this.standardSeason}\n`;
   }
   /**
    * @param {String} databaseRow
@@ -125,6 +129,7 @@ export default class DatabaseEntry {
       difficultyName: entryPieces[6],
       dayCount: entryPieces[7],
       turnCount: entryPieces[8],
+      standardSeason: entryPieces[9],
       logText: logText,
     }
   }
